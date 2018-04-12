@@ -95,11 +95,11 @@ Enjoy!
 
 3. Map: matrix 6x15
 
-	[[EMPT, EMPT, EMPT, EMPT, EMPT, EMPT, H_TI, H_TI, H_TI, H_TI, EMPT, EMPT, H_TI, H_TI, H_TI],
-	 [H_TI, H_TI, H_TI, H_TI, EMPT, EMPT, H_TI, H_TI, H_SW, H_TI, EMPT, EMPT, H_TI, GOAL, H_TI],
-	 [H_TI, H_TI, S_SW, H_TI, EMPT, EMPT, H_TI, H_TI, H_TI, H_TI, EMPT, EMPT, H_TI, H_TI, H_TI],
-	 [H_TI, H_TI, H_TI, H_TI, EMPT, EMPT, H_TI, H_TI, H_TI, H_TI, EMPT, EMPT, H_TI, H_TI, H_TI],
-	 [H_TI, H_TI, H_TI, H_TI, EMPT, EMPT, H_TI, H_TI, H_TI, H_TI, EMPT, EMPT, H_TI, H_TI, H_TI],
+	[[EMPT, EMPT, EMPT, EMPT, EMPT, EMPT, H_TI, H_TI, H_TI, H_TI, EMPT, EMPT, H_TI, H_TI, H_TI],  
+	 [H_TI, H_TI, H_TI, H_TI, EMPT, EMPT, H_TI, H_TI, H_SW, H_TI, EMPT, EMPT, H_TI, GOAL, H_TI],  
+	 [H_TI, H_TI, S_SW, H_TI, EMPT, EMPT, H_TI, H_TI, H_TI, H_TI, EMPT, EMPT, H_TI, H_TI, H_TI],  
+	 [H_TI, H_TI, H_TI, H_TI, EMPT, EMPT, H_TI, H_TI, H_TI, H_TI, EMPT, EMPT, H_TI, H_TI, H_TI],  
+	 [H_TI, H_TI, H_TI, H_TI, EMPT, EMPT, H_TI, H_TI, H_TI, H_TI, EMPT, EMPT, H_TI, H_TI, H_TI],  
 	 [H_TI, H_TI, H_TI, H_TI, EMPT, EMPT, H_TI, H_TI, H_TI, H_TI, EMPT, EMPT, EMPT, EMPT, EMPT]]
 
 4. List bridge's position:
