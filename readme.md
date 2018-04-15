@@ -130,9 +130,30 @@ Enjoy!
 ## Stage 5:
 
 1. Passcode: 528431
-2. Init stage:
-3. Goal stage:
-
+2. Init stage: ((1,14),(1,14), (1,1,1,1,1,1))
+3. Map: 10x16
+	[[EMPT, EMPT, EMPT, EMPT, EMPT, EMPT, EMPT, EMPT, EMPT, EMPT, EMPT, EMPT, H_TI, H_TI, H_TI, H_TI],
+	 [EMPT, H_TI, H_TI, H_TI, H_TI, H_TI, H_TI, H_TI, S_SW, H_TI, H_TI, H_TI, H_TI, H_TI, H_TI, H_TI],
+	 [EMPT, H_TI, H_TI, H_TI, H_TI, EMPT, EMPT, EMPT, EMPT, EMPT, EMPT, EMPT, EMPT, H_TI, H_TI, H_TI],
+	 [EMPT, H_TI, H_TI, S_SW, H_TI, EMPT, EMPT, EMPT, EMPT, EMPT, EMPT, EMPT, EMPT, EMPT, EMPT, EMPT],
+	 [EMPT, H_TI, H_TI, H_TI, H_TI, EMPT, EMPT, EMPT, EMPT, EMPT, EMPT, EMPT, EMPT, EMPT, EMPT, EMPT],
+	 [EMPT, EMPT, EMPT, H_TI, H_TI, H_TI, S_SW, H_TI, H_TI, H_TI, H_TI, H_TI, H_TI, H_TI, EMPT, EMPT],
+	 [EMPT, EMPT, EMPT, EMPT, EMPT, EMPT, EMPT, EMPT, EMPT, EMPT, EMPT, H_TI, H_TI, H_TI, H_TI, S_SW],
+	 [H_TI, H_TI, H_TI, EMPT, EMPT, EMPT, EMPT, EMPT, EMPT, EMPT, EMPT, H_TI, H_TI, H_TI, H_TI, H_TI],
+	 [H_TI, GOAL, H_TI, H_TI, H_TI, H_TI, H_TI, H_TI, H_TI, H_TI, H_TI, H_TI, H_TI, H_TI, EMPT, EMPT],
+	 [H_TI, H_TI, H_TI, H_TI, EMPT, EMPT, EMPT, EMPT, EMPT, EMPT, EMPT, EMPT, EMPT, EMPT, EMPT, EMPT]]
+4. List bridge's position:
+- 6 bridges
+[[(1,5),(1,6)],[(5,8),(5,9)],[(8,5),(8,6)]	
+5. Mapping Switch - Bridge:
+- 4 switches and 6 bridges
+{(1,8):[(1,0)]
+ (3,3): [(3,-1)] //close
+ (5,6): [(3,1] //open
+ (6,15):[(3,0)]
+}
+6. Mapping Split port - Split destination:
+None
 ## Stage 6:
 
 1. Passcode: 524383
