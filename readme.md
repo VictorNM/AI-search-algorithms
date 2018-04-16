@@ -24,7 +24,7 @@ Enjoy!
 
 ## Map:
 
-- A matrix
+- A matrix has size: height*width
 - Cell value is determined as follow:
 	+ EMPTY 		:	EMPT	: 0
 	+ HARD_TILE		:	H_TI 	: 1
@@ -38,7 +38,9 @@ Enjoy!
 
 - List of Bridge's positions: [(xb_1, yb_1), (xb_2, yb_2), ..., (xb_n, yb_n)]
 - Mapping between switch - bridge - action (close -1, toggle 0, open 1)
-	+ example: switch (1,1) will open bridge index 1 and close bridge index 2	=> ( (1,1) , (1,1) , (2,-1) )
+	+ example: switch (1,1) will open bridge index 1 and close bridge index 
+	2	=> ~~( (1,1) , (1,1) , (2,-1) )~~ {(1,1):{1:1,2:-1}}
+	+ explain: {switch_position:{tile_position:action,...}}
 - Mapping between split port - split destination
 
 ## State:
@@ -91,7 +93,7 @@ Enjoy!
 
 1. Passcode: 290299
 
-2. Init stage: ((4,1), (4,1), (0,0,0,0))
+2. Init stage: ~~((4,1), (4,1), (0,0,0,0))~~ [[(4,1),(4,1)],[0,0,0,0]]
 
 3. Map: matrix 6x15
 
@@ -108,8 +110,14 @@ Enjoy!
 
 5. Mapping Switch - Bridge:
 	- 2 switches vs 4 bridge
-	{(2,2) : [(0,0), (1,0)]
-	 (1,8) : [(2,0), (3,0)]}
+	~~{
+		(2,2) : [(0,0), (1,0)]
+		(1,8) : [(2,0), (3,0)]
+	}~~
+	{
+	 	(2,2):{0:0,1:0},
+	 	(1,8):{2:0,3:0}
+	}
 
 6. Mapping Split port - Split destination:
 	- None
@@ -117,9 +125,19 @@ Enjoy!
 ## Stage 3:
 
 1. Passcode: 918660
-2. Init stage:
+2. Init stage:[[(1,3),(1,3)],[]]
+3. Matrix: 15x6
+		[
+		[EMPT,EMPT,EMPT,EMPT,EMPT,EMPT,H_TI,H_TI,H_TI,H_TI,H_TI,H_TI,H_TI,EMPT,EMPT],
+		[H_TI,H_TI,H_TI,H_TI,EMPT,EMPT,H_TI,H_TI,H_TI,EMPT,EMPT,H_TI,H_TI,EMPT,EMPT],
+		[H_TI,H_TI,H_TI,H_TI,H_TI,H_TI,H_TI,H_TI,H_TI,EMPT,EMPT,H_TI,H_TI,H_TI,H_TI],
+		[H_TI,H_TI,H_TI,H_TI,EMPT,EMPT,EMPT,EMPT,EMPT,EMPT,EMPT,H_TI,H_TI,GOAL,H_TI],
+		[H_TI,H_TI,H_TI,H_TI,EMPT,EMPT,EMPT,EMPT,EMPT,EMPT,EMPT,H_TI,H_TI,H_TI,H_TI],
+		[EMPT,EMPT,EMPT,EMPT,EMPT,EMPT,EMPT,EMPT,EMPT,EMPT,EMPT,EMPT,H_TI,H_TI,H_TI],
+		]
 3. Goal stage:
-4. Map:
+	[[(13,3),(13,3)],[]]
+4. Brides: None
 
 ## Stage 4:
 
