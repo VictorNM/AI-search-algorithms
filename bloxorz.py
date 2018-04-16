@@ -77,28 +77,37 @@ class Bloxorz(Problem):
 	def set_map(self, stage_map):
 		self._stage_map = stage_map
 
-	def _move_all_up(self, block_1_position, block_2_position):
+	def _is_standing(self, position_1, position_2):
 		pass
 
-	def _move_all_down(self, block_1_position, block_2_position):
+	def _is_lying(self, position_1, position_2):
 		pass
 
-	def _move_all_left(self, block_1_position, block_2_position):
+	def _is_splitting(self, position_1, position_2):
 		pass
 
-	def _move_all_right(self, block_1_position, block_2_position):
+	def _move_all_up(self, position_1, position_2):
 		pass
 
-	def _move_one_up(self, block_position):
+	def _move_all_down(self, position_1, position_2):
 		pass
 
-	def _move_one_down(self, block_position):
+	def _move_all_left(self, position_1, position_2):
 		pass
 
-	def _move_one_left(self, block_position):
+	def _move_all_right(self, position_1, position_2):
 		pass
 
-	def _move_one_right(self, block_position):
+	def _move_one_up(self, position):
+		pass
+
+	def _move_one_down(self, position):
+		pass
+
+	def _move_one_left(self, position):
+		pass
+
+	def _move_one_right(self, position):
 		pass
 
 	def _is_valid_state(self, state):
