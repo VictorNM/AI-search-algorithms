@@ -22,7 +22,7 @@ Enjoy!
 
 # MODELLING
 
-![alt text](https://raw.githubusercontent.com/NguyenMauVinh1627058/AI-Assignment-1/master/illustration.png)
+![alt text](https://raw.githubusercontent.com/NguyenMauVinh1627058/AI-Assignment-1/khanh/illustration.png)
 
 ## Map:
 
@@ -128,16 +128,17 @@ Enjoy!
 
 1. Passcode: 918660
 2. Init stage:[[(1,3),(1,3)],[]]
-3. Matrix: 15x6
-		[
-		[EMPT,EMPT,EMPT,EMPT,EMPT,EMPT,H_TI,H_TI,H_TI,H_TI,H_TI,H_TI,H_TI,EMPT,EMPT],
-		[H_TI,H_TI,H_TI,H_TI,EMPT,EMPT,H_TI,H_TI,H_TI,EMPT,EMPT,H_TI,H_TI,EMPT,EMPT],
-		[H_TI,H_TI,H_TI,H_TI,H_TI,H_TI,H_TI,H_TI,H_TI,EMPT,EMPT,H_TI,H_TI,H_TI,H_TI],
-		[H_TI,H_TI,H_TI,H_TI,EMPT,EMPT,EMPT,EMPT,EMPT,EMPT,EMPT,H_TI,H_TI,GOAL,H_TI],
-		[H_TI,H_TI,H_TI,H_TI,EMPT,EMPT,EMPT,EMPT,EMPT,EMPT,EMPT,H_TI,H_TI,H_TI,H_TI],
-		[EMPT,EMPT,EMPT,EMPT,EMPT,EMPT,EMPT,EMPT,EMPT,EMPT,EMPT,EMPT,H_TI,H_TI,H_TI],
-		]
-3. Goal stage:
+3. Matrix: 15x6  
+  
+		[  
+		[EMPT,EMPT,EMPT,EMPT,EMPT,EMPT,H_TI,H_TI,H_TI,H_TI,H_TI,H_TI,H_TI,EMPT,EMPT],  
+		[H_TI,H_TI,H_TI,H_TI,EMPT,EMPT,H_TI,H_TI,H_TI,EMPT,EMPT,H_TI,H_TI,EMPT,EMPT],  
+		[H_TI,H_TI,H_TI,H_TI,H_TI,H_TI,H_TI,H_TI,H_TI,EMPT,EMPT,H_TI,H_TI,H_TI,H_TI],  
+		[H_TI,H_TI,H_TI,H_TI,EMPT,EMPT,EMPT,EMPT,EMPT,EMPT,EMPT,H_TI,H_TI,GOAL,H_TI],  
+		[H_TI,H_TI,H_TI,H_TI,EMPT,EMPT,EMPT,EMPT,EMPT,EMPT,EMPT,H_TI,H_TI,H_TI,H_TI],  
+		[EMPT,EMPT,EMPT,EMPT,EMPT,EMPT,EMPT,EMPT,EMPT,EMPT,EMPT,EMPT,H_TI,H_TI,H_TI],  
+		]  
+3. Goal stage: 
 	[[(13,3),(13,3)],[]]
 4. Brides: None
 
