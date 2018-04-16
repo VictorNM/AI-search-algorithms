@@ -22,7 +22,8 @@ Enjoy!
 
 # MODELLING
 
-![alt text](https://raw.githubusercontent.com/NguyenMauVinh1627058/AI-Assignment-1/khanh/illustration.png)
+State 3
+![alt text](https://gitlab.com/NguyenMauVinh1627058/AI-Assignment-1/raw/khanh/illustation.png)
 
 ## Map:
 
