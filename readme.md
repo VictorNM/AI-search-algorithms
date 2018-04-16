@@ -24,7 +24,7 @@ Enjoy!
 
 ## Map:
 
-- A matrix has size: height*width
+- A matrix has size: x*y
 - Cell value is determined as follow:
 	+ EMPTY 		:	EMPT	: 0
 	+ HARD_TILE		:	H_TI 	: 1
