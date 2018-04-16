@@ -56,7 +56,16 @@ class Bloxorz(Problem):
 		pass
 
 	def is_goal_state(self, state):
-		pass
+		self._parse_state_to_map(state)
+		x_1 = state[0][0]
+		y_1 = state[0][1]
+		x_2 = state[1][0]
+		y_2 = state[1][1]
+		if self._stage_map._map_matrix[x_1][y_1] != Square.GOAL:
+			return False
+		if self._stage_map._map_matrix[x_2][y_2] != Square.GOAL:
+			return False
+		return True
 
 	def get_heuristic_rank(self, state):
 		pass
@@ -68,17 +77,32 @@ class Bloxorz(Problem):
 	def set_map(self, stage_map):
 		self._stage_map = stage_map
 
+	def _move_all_up(self, block_1_position, block_2_position):
+		pass
+
+	def _move_all_down(self, block_1_position, block_2_position):
+		pass
+
+	def _move_all_left(self, block_1_position, block_2_position):
+		pass
+
+	def _move_all_right(self, block_1_position, block_2_position):
+		pass
+
+	def _move_one_up(self, block_position):
+		pass
+
+	def _move_one_down(self, block_position):
+		pass
+
+	def _move_one_left(self, block_position):
+		pass
+
+	def _move_one_right(self, block_position):
+		pass
+
 	def _is_valid_state(self, state):
-		self._parse_state_to_map(state)		
-
-	def _set_bridge_positions(self, positions):
-		pass
-
-	def _set_switch_bridge_dict(self, switch_bridge_dict):
-		pass
-
-	def _set_split_port_dest_dict(self, split_port_dest_dict):
-		pass
+		self._parse_state_to_map(state)
 
 	def _get_distance_to_goal(self, position_1, position_2):
 		pass
@@ -135,9 +159,6 @@ def create_stage(stage_number):
 ####################################
 def main():
 	stage_2 = create_stage(2)
-	stage_2.draw_map()
-	state = ((0,0),(0,0),(1,1,1,1))
-	stage_2.draw_map(state)
-	
+
 if __name__ == '__main__':
 	main()
