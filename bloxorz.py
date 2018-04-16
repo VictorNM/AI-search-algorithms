@@ -53,7 +53,18 @@ class Bloxorz(Problem):
 			self.set_initial_state(initial_state)
 
 	def generate_next_states(self, current_state):
-		pass
+		self._parse_state_to_map(current_state)
+		position_1 = current_state[0]
+		position_2 = current_state[1]
+
+		next_states = []
+
+		if self._is_splitting(position_1, position_2):
+			pass
+		else:
+			pass
+
+		return next_states
 
 	def is_goal_state(self, state):
 		self._parse_state_to_map(state)
@@ -78,13 +89,25 @@ class Bloxorz(Problem):
 		self._stage_map = stage_map
 
 	def _is_standing(self, position_1, position_2):
-		pass
+		return position_1 == position_2
 
 	def _is_lying(self, position_1, position_2):
+		(x_1, y_1) = position_1
+		(x_2, y_2) = position_2
+
+		return abs(x_1 - x_2) + abs(y_1 - y_2) == 1
+
+	def _is_lying_x(self, position_1, position_2):
+		pass
+
+	def _is_lying_y(self, position_1, position_2):
 		pass
 
 	def _is_splitting(self, position_1, position_2):
-		pass
+		(x_1, y_1) = position_1
+		(x_2, y_2) = position_2
+
+		return abs(x_1 - x_2) + abs(y_1 - y_2) > 1
 
 	def _move_all_up(self, position_1, position_2):
 		pass
@@ -108,6 +131,9 @@ class Bloxorz(Problem):
 		pass
 
 	def _move_one_right(self, position):
+		pass
+
+	def _get_move_consequence(self, state):
 		pass
 
 	def _is_valid_state(self, state):

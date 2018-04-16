@@ -38,7 +38,7 @@ Enjoy!
 
 - List of Bridge's positions: [(xb_1, yb_1), (xb_2, yb_2), ..., (xb_n, yb_n)]
 - Mapping between switch - bridge - action (close -1, toggle 0, open 1)
-	+ example: switch (1,1) will open bridge index 1 and close bridge index 2	=> ( (1,1) , (1,1) , (2,-1) )
+	+ example: switch (1,1) will open bridge index 1 and close bridge index 2	=>  {(1,1) : [(1,1) , (2,-1)]}
 - Mapping between split port - split destination
 
 ## State:
