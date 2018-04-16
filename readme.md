@@ -22,6 +22,8 @@ Enjoy!
 
 # MODELLING
 
+![alt text](https://raw.githubusercontent.com/NguyenMauVinh1627058/AI-Assignment-1/master/illustration.png)
+
 ## Map:
 
 - A matrix has size: x*y
