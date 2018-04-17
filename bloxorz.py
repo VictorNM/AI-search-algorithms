@@ -30,12 +30,25 @@ class Map(object):
 
 	def parse_bridge_status(self, list_bridge_status):
 		for index, position in enumerate(self._bridge_positions):
-			x = position[0]
-			y = position[1]
-			self._map_matrix[x][y] = list_bridge_status[index]
+			row = position[0]
+			col = position[1]
+			self._map_matrix[row][col] = list_bridge_status[index]
+
+	def get_map_value(self, position):
+		(row, col) = position
+		return self._map_matrix[row][col]
+
+	def is_in_map(self, position):
+		(row, col) = position
+		width = len(self._map_matrix[0])
+		heigth = len(self._map_matrix)
+		
+		if row < 0 or row > heigth: return False
+		if col < 0 or col > width: return False
+		return True
 
 	def __str__(self):
-		value_matrix = [[int(self._map_matrix[x][y])
+		value_matrix = [[int(self._map_matrix[row][col])
 						for y in range(len(self._map_matrix[x]))]
 						for x in range(len(self._map_matrix))]
 
@@ -54,29 +67,22 @@ class Bloxorz(Problem):
 
 	def generate_next_states(self, current_state):
 		self._parse_state_to_map(current_state)
-		position_1 = current_state[0]
-		position_2 = current_state[1]
+		block_positions = current_state[0]
 
 		next_states = []
-
-		if self._is_splitting(position_1, position_2):
-			pass
-		else:
-			pass
+		new_positions = self._do_all_valid_moves(block_positions)
+		for position in new_positions:
+			state = self._get_move_consequence(position)
+			next_states.append(state)
 
 		return next_states
 
 	def is_goal_state(self, state):
 		self._parse_state_to_map(state)
-		x_1 = state[0][0]
-		y_1 = state[0][1]
-		x_2 = state[1][0]
-		y_2 = state[1][1]
-		if self._stage_map._map_matrix[x_1][y_1] != Square.GOAL:
-			return False
-		if self._stage_map._map_matrix[x_2][y_2] != Square.GOAL:
-			return False
-		return True
+		(position_1, position_2) = state[0]
+
+		return (self._stage_map.get_map_value(position_1) == Square.GOAL and
+				self._stage_map.get_map_value(position_2) == Square.GOAL)
 
 	def get_heuristic_rank(self, state):
 		pass
@@ -88,50 +94,105 @@ class Bloxorz(Problem):
 	def set_map(self, stage_map):
 		self._stage_map = stage_map
 
-	def _is_standing(self, position_1, position_2):
-		return position_1 == position_2
+	def _do_all_valid_moves(self, block_positions):
+		(position_1, position_2) = block_positions
 
-	def _is_lying(self, position_1, position_2):
-		(x_1, y_1) = position_1
-		(x_2, y_2) = position_2
+		new_positions = None
+		if self._is_splitting:
+			new_positions = [position
+							 for position in self._move_one(position_1, position_2)
+							 if self._is_valid_position(position)]
+		else:
+			new_positions = [position
+							 for position in self._move_all(block_positions)
+							 if self._is_valid_position(position)]
 
-		return abs(x_1 - x_2) + abs(y_1 - y_2) == 1
 
-	def _is_lying_x(self, position_1, position_2):
-		pass
+		return new_positions
 
-	def _is_lying_y(self, position_1, position_2):
-		pass
+	def _is_standing(self, block_positions):
+		return block_positions[0] == block_positions[1]
+
+	def _is_lying_row(self, block_positions):
+		(row_1, col_1) = block_positions[0]
+		(row_2, col_2) = block_positions[1]
+
+		return (row_1 == row_2) and (abs(col_1 - col_2) == 1)
+
+	def _is_lying_col(self, block_positions):
+		(row_1, col_1) = block_positions[0]
+		(row_2, col_2) = block_positions[1]
+
+		return (col_1 == col_2) and (abs(row_1 - row_2) == 1)
 
 	def _is_splitting(self, position_1, position_2):
-		(x_1, y_1) = position_1
-		(x_2, y_2) = position_2
+		(row_1, col_1) = position_1
+		(row_2, col_2) = position_2
 
-		return abs(x_1 - x_2) + abs(y_1 - y_2) > 1
+		return abs(row_1 - row_2) + abs(col_1 - col_2) > 1
 
-	def _move_all_up(self, position_1, position_2):
+	def _move_one(self, positions):
 		pass
 
-	def _move_all_down(self, position_1, position_2):
-		pass
+	def _move_all(self, block_positions):
+		new_positions = []
 
-	def _move_all_left(self, position_1, position_2):
-		pass
+		# move up
+		new_position_up = self._move_all_up(block_positions)
+		if self._is_valid_position(new_position_up):
+			new_positions.append(new_position_up)
 
-	def _move_all_right(self, position_1, position_2):
-		pass
+		# move down
+		new_position_down = self._move_all_down(block_positions)
+		if self._is_valid_position(new_position_down):
+			new_positions.append(new_position_down)
 
-	def _move_one_up(self, position):
-		pass
+		# move left
 
-	def _move_one_down(self, position):
-		pass
+		# move right
 
-	def _move_one_left(self, position):
-		pass
+	def _move_all_up(self, block_positions):
+		(position_1, position_2) = block_positions
+		(row_1, col_1) = position_1
+		(row_2, col_2) = position_2
 
-	def _move_one_right(self, position):
-		pass
+		if self._is_standing(block_positions):
+			row_1 -= 2
+			row_2 -= 1
+		elif self._is_lying_row(block_positions):
+			row_1 -= 1
+			row_2 -= 1
+		elif self._is_lying_col(block_positions):
+			if row_1 < row_2: row_1 -= 1
+			else: row_1 -= 2
+			row_2 = row_1
+
+		new_position = ((row_1, col_1),(row_2, col_2))
+		return new_position
+
+
+	def _is_valid_position(self, block_positions):
+		(position_1, position_2) = block_positions
+
+		# check with map's dimension
+		if (not self._stage_map.is_in_map(position_1) or
+			not self._stage_map.is_in_map(position_2)):
+			# print('out of map')
+			return False
+
+		# check empty
+		if (self._stage_map.get_map_value(position_1) == Square.EMPT or
+			self._stage_map.get_map_value(position_2) == Square.EMPT):
+			# print('on empty')
+			return False
+
+		# check solf tile
+		if (self._is_standing(block_positions) and
+			self._stage_map.get_map_value(position_1) == Square.S_TI):
+			# print('stand on solf tile')
+			return False
+
+		return True
 
 	def _get_move_consequence(self, state):
 		pass
@@ -143,7 +204,7 @@ class Bloxorz(Problem):
 		pass
 
 	def _parse_state_to_map(self, state):
-		list_bridge_status = state[2]
+		list_bridge_status = state[1]
 		self._stage_map.parse_bridge_status(list_bridge_status)
 
 	def draw_map(self, state = None):
@@ -179,7 +240,7 @@ def create_stage_2():
 	stage_2_map.set_map(stage_2_map_matrix, stage_2_bridge_positions, stage_2_switch_bridge_dict, stage_2_split_port_dest_dict)
 
 	stage_2_problem = Bloxorz(stage_2_map)
-	stage_2_initial_state = ((4,1), (4,1), (0,0,0,0))
+	stage_2_initial_state = ( ((4,1), (4,1)), (0,0,0,0) )
 	stage_2_problem.set_initial_state(stage_2_initial_state)
 
 	return stage_2_problem
