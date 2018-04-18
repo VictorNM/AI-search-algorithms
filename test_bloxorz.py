@@ -6,6 +6,8 @@ class TestBloxorz(unittest.TestCase):
 	def setUp(self):
 		self.bloxorz =  create_stage(2)
 
+	# TEST GOAL CONDITION
+
 	def test_is_goal_state(self):
 		# Test False
 		false_list = [
@@ -23,6 +25,8 @@ class TestBloxorz(unittest.TestCase):
 
 		for state in true_list:
 			self.assertTrue(self.bloxorz.is_goal_state(state))
+
+	# TEST BLOCK STATUS
 
 	def test_is_standing(self):
 		# Test False
@@ -102,6 +106,8 @@ class TestBloxorz(unittest.TestCase):
 		for position in true_list:
 			self.assertTrue(self.bloxorz._is_splitting(position[0], position[1]))
 
+	# TEST VALIDITY
+
 	def test_is_valid_position(self):
 		# Test False
 		false_list = [
@@ -125,16 +131,33 @@ class TestBloxorz(unittest.TestCase):
 		for position in true_list:
 			self.assertTrue(self.bloxorz._is_valid_position(position))
 
-	def test_move_all_up(self):
-		testcase_expect_dict = {
-			((3,3), (3,3)) : ((1,3), (2,3)),		# standing
-			((3,3), (3,4)) : ((2,3), (2,4)),		# lying row
-			((3,3), (2,3)) : ((1,3), (1,3)),		# lying col
+	# TEST MOVEMENTS
+
+	def test_move_pair_up(self):
+
+		# standing
+		testcase_expect_standing_dict = {
+			((3,3), (3,3)) : ((1,3), (2,3)),
 		}
 
-		for testcase, expect in testcase_expect_dict.items():
-			# print(testcase, expect)
-			self.assertEqual(self.bloxorz._move_all_up(testcase), expect)
+		for testcase, expect in testcase_expect_standing_dict.items():
+			self.assertEqual(self.bloxorz._move_pair_up(testcase), expect)
+
+		# lying row
+		testcase_expect_lying_row_dict = {
+			((3,3), (3,4)) : ((2,3), (2,4)),
+		}
+
+		for testcase, expect in testcase_expect_lying_row_dict.items():
+			self.assertEqual(self.bloxorz._move_pair_up(testcase), expect)
+
+		# lying col
+		testcase_expect_lying_col_dict = {
+			((3,3), (2,3)) : ((1,3), (1,3)),
+		}
+
+		for testcase, expect in testcase_expect_lying_col_dict.items():
+			self.assertEqual(self.bloxorz._move_pair_up(testcase), expect)
 
 if __name__ == '__main__':
     unittest.main()

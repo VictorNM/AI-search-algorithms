@@ -67,22 +67,23 @@ class Bloxorz(Problem):
 
 	def generate_next_states(self, current_state):
 		self._parse_state_to_map(current_state)
-		block_positions = current_state[0]
+		pair_block_position = current_state[0]
+		bridge_status_list = current_state[1]
 
 		next_states = []
-		new_positions = self._do_all_valid_moves(block_positions)
-		for position in new_positions:
-			state = self._get_move_consequence(position)
+		new_pair_block_position_list = self._do_all_valid_moves(pair_block_position)
+		for pair_block_position in new_pair_block_position_list:
+			state = self._get_move_consequence(pair_block_position, bridge_status_list)
 			next_states.append(state)
 
 		return next_states
 
 	def is_goal_state(self, state):
 		self._parse_state_to_map(state)
-		(position_1, position_2) = state[0]
+		(single_block_position_1, single_block_position_2) = state[0]
 
-		return (self._stage_map.get_map_value(position_1) == Square.GOAL and
-				self._stage_map.get_map_value(position_2) == Square.GOAL)
+		return (self._stage_map.get_map_value(single_block_position_1) == Square.GOAL and
+				self._stage_map.get_map_value(single_block_position_2) == Square.GOAL)
 
 	def get_heuristic_rank(self, state):
 		pass
@@ -94,113 +95,127 @@ class Bloxorz(Problem):
 	def set_map(self, stage_map):
 		self._stage_map = stage_map
 
-	def _do_all_valid_moves(self, block_positions):
-		(position_1, position_2) = block_positions
+	def _do_all_valid_moves(self, pair_block_position):
+		(single_block_position_1, single_block_position_2) = pair_block_position
 
-		new_positions = None
+		new_pair_block_position_list = None
 		if self._is_splitting:
-			new_positions = [position
-							 for position in self._move_one(position_1, position_2)
-							 if self._is_valid_position(position)]
+			new_pair_block_position_list = [pair_block_position
+							 for pair_block_position in self._move_single(pair_block_position)
+							 if self._is_valid_position(pair_block_position)]
 		else:
-			new_positions = [position
-							 for position in self._move_all(block_positions)
-							 if self._is_valid_position(position)]
+			new_pair_block_position_list = [pair_block_position
+							 for pair_block_position in self._move_pair(pair_block_position)
+							 if self._is_valid_position(pair_block_position)]
 
 
-		return new_positions
+		return new_pair_block_position_list
 
-	def _is_standing(self, block_positions):
-		return block_positions[0] == block_positions[1]
+	def _is_standing(self, pair_block_position):
+		return pair_block_position[0] == pair_block_position[1]
 
-	def _is_lying_row(self, block_positions):
-		(row_1, col_1) = block_positions[0]
-		(row_2, col_2) = block_positions[1]
+	def _is_lying_row(self, pair_block_position):
+		(row_1, col_1) = pair_block_position[0]
+		(row_2, col_2) = pair_block_position[1]
 
 		return (row_1 == row_2) and (abs(col_1 - col_2) == 1)
 
-	def _is_lying_col(self, block_positions):
-		(row_1, col_1) = block_positions[0]
-		(row_2, col_2) = block_positions[1]
+	def _is_lying_col(self, pair_block_position):
+		(row_1, col_1) = pair_block_position[0]
+		(row_2, col_2) = pair_block_position[1]
 
 		return (col_1 == col_2) and (abs(row_1 - row_2) == 1)
 
-	def _is_splitting(self, position_1, position_2):
-		(row_1, col_1) = position_1
-		(row_2, col_2) = position_2
+	def _is_splitting(self, single_block_position_1, single_block_position_2):
+		(row_1, col_1) = single_block_position_1
+		(row_2, col_2) = single_block_position_2
 
 		return abs(row_1 - row_2) + abs(col_1 - col_2) > 1
 
-	def _move_one(self, positions):
-		pass
-
-	def _move_all(self, block_positions):
-		new_positions = []
+	def _move_single(self, pair_block_position):
+		new_pair_block_position_list_list = []
+		(single_block_position_1, single_block_position_2) = pair_block_position
 
 		# move up
-		new_position_up = self._move_all_up(block_positions)
-		if self._is_valid_position(new_position_up):
-			new_positions.append(new_position_up)
+		new_pair_position_up_1 = (self._move_single_up(single_block_position_1), single_block_position_2)
+		if self._is_valid_position(position_up_1):
+			new_pair_block_position_list.append(new_pair_position_up_1)
+
+		new_pair_position_up_2 = (single_block_position_1, self._move_single_up(single_block_position_2))
+		if self._is_valid_position(position_up_2):
+			new_pair_block_position_list.append(new_pair_position_up_2)
+
+		# move down	
+
+	def _move_pair(self, pair_block_position):
+		new_pair_block_position_list_list = []
+
+		# move up
+		new_pair_position_up = self._move_pair_up(pair_block_position)
+		if self._is_valid_position(new_pair_position_up):
+			new_pair_block_position_list.append(new_pair_position_up)
 
 		# move down
-		new_position_down = self._move_all_down(block_positions)
-		if self._is_valid_position(new_position_down):
-			new_positions.append(new_position_down)
+		new_pair_position_down = self._move_pair_down(pair_block_position)
+		if self._is_valid_position(new_pair_position_down):
+			new_pair_block_position_list.append(new_pair_position_down)
 
 		# move left
 
 		# move right
 
-	def _move_all_up(self, block_positions):
-		(position_1, position_2) = block_positions
-		(row_1, col_1) = position_1
-		(row_2, col_2) = position_2
+		return new_pair_block_position_list_list
 
-		if self._is_standing(block_positions):
+	def _move_pair_up(self, pair_block_position):
+		(single_block_position_1, single_block_position_2) = pair_block_position
+		(row_1, col_1) = single_block_position_1
+		(row_2, col_2) = single_block_position_2
+
+		if self._is_standing(pair_block_position):
 			row_1 -= 2
 			row_2 -= 1
-		elif self._is_lying_row(block_positions):
+		elif self._is_lying_row(pair_block_position):
 			row_1 -= 1
 			row_2 -= 1
-		elif self._is_lying_col(block_positions):
+		elif self._is_lying_col(pair_block_position):
 			if row_1 < row_2: row_1 -= 1
 			else: row_1 -= 2
 			row_2 = row_1
 
-		new_position = ((row_1, col_1),(row_2, col_2))
-		return new_position
+		new_pair_block_position = ((row_1, col_1),(row_2, col_2))
+		return new_pair_block_position
 
 
-	def _is_valid_position(self, block_positions):
-		(position_1, position_2) = block_positions
+	def _is_valid_position(self, pair_block_position):
+		(single_block_position_1, single_block_position_2) = pair_block_position
 
 		# check with map's dimension
-		if (not self._stage_map.is_in_map(position_1) or
-			not self._stage_map.is_in_map(position_2)):
+		if (not self._stage_map.is_in_map(single_block_position_1) or
+			not self._stage_map.is_in_map(single_block_position_2)):
 			# print('out of map')
 			return False
 
 		# check empty
-		if (self._stage_map.get_map_value(position_1) == Square.EMPT or
-			self._stage_map.get_map_value(position_2) == Square.EMPT):
+		if (self._stage_map.get_map_value(single_block_position_1) == Square.EMPT or
+			self._stage_map.get_map_value(single_block_position_2) == Square.EMPT):
 			# print('on empty')
 			return False
 
 		# check solf tile
-		if (self._is_standing(block_positions) and
-			self._stage_map.get_map_value(position_1) == Square.S_TI):
+		if (self._is_standing(pair_block_position) and
+			self._stage_map.get_map_value(single_block_position_1) == Square.S_TI):
 			# print('stand on solf tile')
 			return False
 
 		return True
 
-	def _get_move_consequence(self, state):
+	def _get_move_consequence(self, pair_block_position, bridge_status_list):
 		pass
 
 	def _is_valid_state(self, state):
 		self._parse_state_to_map(state)
 
-	def _get_distance_to_goal(self, position_1, position_2):
+	def _get_distance_to_goal(self, single_block_position_1, single_block_position_2):
 		pass
 
 	def _parse_state_to_map(self, state):
