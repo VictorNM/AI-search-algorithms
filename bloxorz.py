@@ -302,7 +302,6 @@ class Bloxorz(Problem):
 
 	def _is_valid_block_position(self, pair_block_position):
 		(single_block_position_1, single_block_position_2) = pair_block_position
-
 		# check with map's dimension
 		if (not self._stage_map.is_in_map(single_block_position_1) or
 			not self._stage_map.is_in_map(single_block_position_2)):
@@ -324,10 +323,40 @@ class Bloxorz(Problem):
 		return True
 
 	def _get_move_consequence(self, pair_block_position, bridge_status_list):
+		# check on soft switch: check all 2 single positions
+		if self._is_on_soft_switch(pair_block_position[0]):
+			switch_position = pair_block_position[0]
+			bridge_status_list = self._change_bridge_status(switch_position, bridge_status_list)
+		if self._is_on_soft_switch(pair_block_position[1]):
+			switch_position = pair_block_position[1]
+			bridge_status_list = self._change_bridge_status(switch_position, bridge_status_list)
+
+		# check on hard switch
+		if self._is_on_hard_switch(pair_block_position):
+			switch_position = pair_block_position[0]
+			bridge_status_list = self._change_bridge_status(switch_position, bridge_status_list)
+
+		# check on split port
+		if self._is_on_split_port(pair_block_position):
+			split_port_position = pair_block_position[0]
+			pair_block_position = self._move_to_split_dest(split_port_position)
+
 		return (pair_block_position, bridge_status_list)
 
-	def _is_valid_state(self, state):
-		self._parse_state_to_map(state)
+	def _is_on_soft_switch(self, single_block_position):
+		return False
+
+	def _is_on_hard_switch(self, pair_block_position):
+		return False
+
+	def _is_on_split_port(self, pair_block_position):
+		return False
+
+	def _change_bridge_status(self, switch_position, bridge_status_list):
+		return bridge_status_list
+
+	def _move_to_split_dest(self, split_port_position):
+		return (split_port_position,split_port_position)
 
 	def _get_distance_to_goal(self, pair_block_position):
 		(single_block_position_1, single_block_position_2) = pair_block_position
