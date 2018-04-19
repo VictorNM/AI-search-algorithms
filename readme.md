@@ -151,7 +151,7 @@ State 3
 
 ## Stage 5:
 
-1. Passcode: 528431
+1. Passcode: 028431
 2. Init stage: ((1,14),(1,14), (1,1,1,1,1,1))
 3. Map: 10x16
 
