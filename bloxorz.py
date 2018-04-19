@@ -43,6 +43,9 @@ class Map(object):
 		(row, col) = position
 		return self._map_matrix[row][col]
 
+	def get_list_bridge_action_of_switch(self, switch_position):
+		return self._switch_bridge_dict[switch_position]
+
 	def is_in_map(self, position):
 		(row, col) = position
 		width = len(self._map_matrix[0])
@@ -302,7 +305,6 @@ class Bloxorz(Problem):
 
 	def _is_valid_block_position(self, pair_block_position):
 		(single_block_position_1, single_block_position_2) = pair_block_position
-
 		# check with map's dimension
 		if (not self._stage_map.is_in_map(single_block_position_1) or
 			not self._stage_map.is_in_map(single_block_position_2)):
@@ -324,10 +326,65 @@ class Bloxorz(Problem):
 		return True
 
 	def _get_move_consequence(self, pair_block_position, bridge_status_list):
+		# check on soft switch: check all 2 single positions
+		if self._is_on_soft_switch(pair_block_position[0]):
+			switch_position = pair_block_position[0]
+			bridge_status_list = self._change_list_bridge_status(switch_position, bridge_status_list)
+		if (pair_block_position[1] != pair_block_position[0] and
+			self._is_on_soft_switch(pair_block_position[1])):
+			switch_position = pair_block_position[1]
+			bridge_status_list = self._change_list_bridge_status(switch_position, bridge_status_list)
+
+		# check on hard switch
+		if self._is_on_hard_switch(pair_block_position):
+			switch_position = pair_block_position[0]
+			bridge_status_list = self._change_list_bridge_status(switch_position, bridge_status_list)
+
+		# check on split port
+		if self._is_on_split_port(pair_block_position):
+			split_port_position = pair_block_position[0]
+			pair_block_position = self._move_to_split_dest(split_port_position)
+
 		return (pair_block_position, bridge_status_list)
 
-	def _is_valid_state(self, state):
-		self._parse_state_to_map(state)
+	def _is_on_soft_switch(self, single_block_position):
+		return self._stage_map.get_map_value(single_block_position) == Square.S_SW
+
+	def _is_on_hard_switch(self, pair_block_position):
+		(position_1, position_2) = pair_block_position
+		return (self._stage_map.get_map_value(position_1) == Square.H_SW and
+				self._stage_map.get_map_value(position_2) == Square.H_SW)
+
+	def _is_on_split_port(self, pair_block_position):
+		return False
+		## uncomment after write test
+		# (position_1, position_2) = pair_block_position
+		# return (self._stage_map.get_map_value(position_1) == Square.SPLI and
+		# 		self._stage_map.get_map_value(position_2) == Square.SPLI)
+
+	def _change_list_bridge_status(self, switch_position, bridge_status_list):
+		bridge_action_list = self._stage_map.get_list_bridge_action_of_switch(switch_position)
+		bridge_status_list = list(bridge_status_list)
+		for bridge_action in bridge_action_list:
+			bridge_index = bridge_action[0]
+			action_code = bridge_action[1]
+			if action_code == -1:
+				bridge_status_list[bridge_index] = Square.EMPT
+			elif action_code == 1:
+				bridge_status_list[bridge_index] = Square.H_TI
+			elif action_code == 0:
+				if bridge_status_list[bridge_index] == Square.EMPT:
+					bridge_status_list[bridge_index] = Square.H_TI
+				else:
+					bridge_status_list[bridge_index] = Square.EMPT
+		
+		return tuple(bridge_status_list)
+
+	def _change_bridge_status(self, bridge_index, action_code):
+		pass
+
+	def _move_to_split_dest(self, split_port_position):
+		return (split_port_position,split_port_position)
 
 	def _get_distance_to_goal(self, pair_block_position):
 		(single_block_position_1, single_block_position_2) = pair_block_position

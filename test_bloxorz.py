@@ -313,6 +313,49 @@ class TestBloxorz(unittest.TestCase):
 			self.assertEqual(self.bloxorz._do_all_valid_moves(testcase), expect)
 
 	# TEST CONSEQUENCE
+	def test_is_on_soft_switch(self):
+		# Test False
+		false_list = [
+			(0,0),
+			(1,8),
+		]
+
+		for position in false_list:
+			self.assertFalse(self.bloxorz._is_on_soft_switch(position))
+
+		# Test True
+		true_list = [
+			(2,2)
+		]
+
+		for position in true_list:
+			self.assertTrue(self.bloxorz._is_on_soft_switch(position))
+
+	def test_is_on_hard_switch(self):
+		# Test False
+		false_list = [
+			((0,0),(0,1)),		# 0 block on hard switch
+			((1,8),(1,9)),		# 1 block on hard switch
+		]
+
+		for position in false_list:
+			self.assertFalse(self.bloxorz._is_on_hard_switch(position))
+
+		# Test True
+		true_list = [
+			((1,8),(1,8)),
+		]
+
+		for position in true_list:
+			self.assertTrue(self.bloxorz._is_on_hard_switch(position))
+
+	def test_change_list_bridge_status(self):
+		soft_switch_position = (2,2)
+		bridge_status_list = (Square.EMPT,Square.EMPT,Square.EMPT,Square.EMPT)
+		expect_result = (Square.H_TI,Square.H_TI,Square.EMPT,Square.EMPT)
+		real_result = self.bloxorz._change_list_bridge_status(soft_switch_position, bridge_status_list)
+		self.assertEqual(real_result, expect_result)
+
 	def test_get_move_consequence(self):
 		pass
 
