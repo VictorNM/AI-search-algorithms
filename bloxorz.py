@@ -21,17 +21,22 @@ class Map(object):
 		self._bridge_positions = None
 		self._switch_bridge_dict = None
 		self._split_port_dest_dict = None
+		self._goal_position = None
 	
 	def set_map(self, map_matrix, bridge_positions, switch_bridge_dict, split_port_dest_dict):
 		self._map_matrix = map_matrix
 		self._bridge_positions = bridge_positions
 		self._switch_bridge_dict = switch_bridge_dict
 		self._split_port_dest_dict = split_port_dest_dict
+		# find goal position
+		for row in range(len(self._map_matrix)):
+			for col in range(len(self._map_matrix[row])):
+				if self._map_matrix[row][col] == Square.GOAL:
+					self._goal_position = (row, col)
 
 	def parse_bridge_status(self, list_bridge_status):
 		for index, position in enumerate(self._bridge_positions):
-			row = position[0]
-			col = position[1]
+			(row, col) = position
 			self._map_matrix[row][col] = list_bridge_status[index]
 
 	def get_map_value(self, position):
@@ -43,9 +48,12 @@ class Map(object):
 		width = len(self._map_matrix[0])
 		heigth = len(self._map_matrix)
 		
-		if row < 0 or row > heigth: return False
-		if col < 0 or col > width: return False
+		if row < 0 or row > heigth - 1: return False
+		if col < 0 or col > width - 1: return False
 		return True
+
+	def get_goal_position(self):
+		return self._goal_position
 
 	def __str__(self):
 		value_matrix = [[int(self._map_matrix[row][col])
@@ -86,7 +94,8 @@ class Bloxorz(Problem):
 				self._stage_map.get_map_value(single_block_position_2) == Square.GOAL)
 
 	def get_heuristic_rank(self, state):
-		pass
+		pair_block_position = state[0]
+		return self._get_distance_to_goal(pair_block_position)
 
 	def set_initial_state(self, initial_state):
 		self.initial_state = initial_state
@@ -96,20 +105,30 @@ class Bloxorz(Problem):
 		self._stage_map = stage_map
 
 	def _do_all_valid_moves(self, pair_block_position):
-		(single_block_position_1, single_block_position_2) = pair_block_position
-
 		new_pair_block_position_list = None
-		if self._is_splitting:
+		if self._is_splitting(pair_block_position):
 			new_pair_block_position_list = [pair_block_position
-							 for pair_block_position in self._move_single(pair_block_position)
-							 if self._is_valid_position(pair_block_position)]
+							 for pair_block_position in self._do_all_single_moves(pair_block_position)
+							 if self._is_valid_block_position(pair_block_position)]
 		else:
 			new_pair_block_position_list = [pair_block_position
-							 for pair_block_position in self._move_pair(pair_block_position)
-							 if self._is_valid_position(pair_block_position)]
+							 for pair_block_position in self._do_all_pair_moves(pair_block_position)
+							 if self._is_valid_block_position(pair_block_position)]
 
-
+		new_pair_block_position_list = self._adjust_block_position_order(new_pair_block_position_list)
 		return new_pair_block_position_list
+
+	# make sure (3,1) (3,2) is always (3,1) (3,2)
+	# not (3,2) (3,1)
+	def _adjust_block_position_order(self, pair_block_position_list):
+		adjusted_list = []
+		for pair_block_position in pair_block_position_list:
+			(single_block_position_1, single_block_position_2) = pair_block_position
+			if single_block_position_1 > single_block_position_2:
+				adjusted_list.append((single_block_position_2, single_block_position_1))
+			else:
+				adjusted_list.append(pair_block_position)
+		return adjusted_list
 
 	def _is_standing(self, pair_block_position):
 		return pair_block_position[0] == pair_block_position[1]
@@ -126,45 +145,84 @@ class Bloxorz(Problem):
 
 		return (col_1 == col_2) and (abs(row_1 - row_2) == 1)
 
-	def _is_splitting(self, single_block_position_1, single_block_position_2):
+	def _is_splitting(self, pair_block_position):
+		(single_block_position_1, single_block_position_2) = pair_block_position
 		(row_1, col_1) = single_block_position_1
 		(row_2, col_2) = single_block_position_2
 
 		return abs(row_1 - row_2) + abs(col_1 - col_2) > 1
 
-	def _move_single(self, pair_block_position):
-		new_pair_block_position_list_list = []
+	def _do_all_single_moves(self, pair_block_position):
+		new_pair_block_position_list = []
 		(single_block_position_1, single_block_position_2) = pair_block_position
 
 		# move up
 		new_pair_position_up_1 = (self._move_single_up(single_block_position_1), single_block_position_2)
-		if self._is_valid_position(position_up_1):
-			new_pair_block_position_list.append(new_pair_position_up_1)
-
 		new_pair_position_up_2 = (single_block_position_1, self._move_single_up(single_block_position_2))
-		if self._is_valid_position(position_up_2):
-			new_pair_block_position_list.append(new_pair_position_up_2)
 
-		# move down	
+		new_pair_block_position_list.append(new_pair_position_up_1)
+		new_pair_block_position_list.append(new_pair_position_up_2)
 
-	def _move_pair(self, pair_block_position):
-		new_pair_block_position_list_list = []
+		# move down
+		new_pair_position_down_1 = (self._move_single_down(single_block_position_1), single_block_position_2)
+		new_pair_position_down_2 = (single_block_position_1, self._move_single_down(single_block_position_2))
 
-		# move up
+		new_pair_block_position_list.append(new_pair_position_down_1)
+		new_pair_block_position_list.append(new_pair_position_down_2)
+
+		# move left
+		new_pair_position_left_1 = (self._move_single_left(single_block_position_1), single_block_position_2)
+		new_pair_position_left_2 = (single_block_position_1, self._move_single_left(single_block_position_2))
+
+		new_pair_block_position_list.append(new_pair_position_left_1)
+		new_pair_block_position_list.append(new_pair_position_left_2)
+
+		# move right
+		new_pair_position_right_1 = (self._move_single_right(single_block_position_1), single_block_position_2)
+		new_pair_position_right_2 = (single_block_position_1, self._move_single_right(single_block_position_2))
+
+		new_pair_block_position_list.append(new_pair_position_right_1)
+		new_pair_block_position_list.append(new_pair_position_right_2)
+
+		return new_pair_block_position_list
+
+	def _do_all_pair_moves(self, pair_block_position):
+		new_pair_block_position_list = []
+
+		# move up and check validity
 		new_pair_position_up = self._move_pair_up(pair_block_position)
-		if self._is_valid_position(new_pair_position_up):
-			new_pair_block_position_list.append(new_pair_position_up)
+		new_pair_block_position_list.append(new_pair_position_up)
 
 		# move down
 		new_pair_position_down = self._move_pair_down(pair_block_position)
-		if self._is_valid_position(new_pair_position_down):
-			new_pair_block_position_list.append(new_pair_position_down)
+		new_pair_block_position_list.append(new_pair_position_down)
 
 		# move left
+		new_pair_position_left = self._move_pair_left(pair_block_position)
+		new_pair_block_position_list.append(new_pair_position_left)
 
 		# move right
+		new_pair_position_right = self._move_pair_right(pair_block_position)
+		new_pair_block_position_list.append(new_pair_position_right)
 
-		return new_pair_block_position_list_list
+
+		return new_pair_block_position_list
+
+	def _move_single_up(self, single_block_position):
+		(row, col) = single_block_position
+		return (row - 1, col)
+
+	def _move_single_down(self, single_block_position):
+		(row, col) = single_block_position
+		return (row + 1, col)
+
+	def _move_single_left(self, single_block_position):
+		(row, col) = single_block_position
+		return (row, col - 1)
+
+	def _move_single_right(self, single_block_position):
+		(row, col) = single_block_position
+		return (row, col + 1)
 
 	def _move_pair_up(self, pair_block_position):
 		(single_block_position_1, single_block_position_2) = pair_block_position
@@ -185,8 +243,64 @@ class Bloxorz(Problem):
 		new_pair_block_position = ((row_1, col_1),(row_2, col_2))
 		return new_pair_block_position
 
+	def _move_pair_down(self, pair_block_position):
+		(single_block_position_1, single_block_position_2) = pair_block_position
+		(row_1, col_1) = single_block_position_1
+		(row_2, col_2) = single_block_position_2
 
-	def _is_valid_position(self, pair_block_position):
+		if self._is_standing(pair_block_position):
+			row_1 += 2
+			row_2 += 1
+		elif self._is_lying_row(pair_block_position):
+			row_1 += 1
+			row_2 += 1
+		elif self._is_lying_col(pair_block_position):
+			if row_1 > row_2: row_1 += 1
+			else: row_1 += 2
+			row_2 = row_1
+
+		new_pair_block_position = ((row_1, col_1),(row_2, col_2))
+		return new_pair_block_position
+
+	def _move_pair_left(self, pair_block_position):
+		(single_block_position_1, single_block_position_2) = pair_block_position
+		(row_1, col_1) = single_block_position_1
+		(row_2, col_2) = single_block_position_2
+
+		if self._is_standing(pair_block_position):
+			col_1 -= 2
+			col_2 -= 1
+		elif self._is_lying_row(pair_block_position):
+			if col_1 < col_2: col_1 -= 1
+			else: col_1 -= 2
+			col_2 = col_1
+		elif self._is_lying_col(pair_block_position):
+			col_1 -= 1
+			col_2 -= 1
+
+		new_pair_block_position = ((row_1, col_1),(row_2, col_2))
+		return new_pair_block_position
+
+	def _move_pair_right(self, pair_block_position):
+		(single_block_position_1, single_block_position_2) = pair_block_position
+		(row_1, col_1) = single_block_position_1
+		(row_2, col_2) = single_block_position_2
+
+		if self._is_standing(pair_block_position):
+			col_1 += 2
+			col_2 += 1
+		elif self._is_lying_row(pair_block_position):
+			if col_1 > col_2: col_1 += 1
+			else: col_1 += 2
+			col_2 = col_1
+		elif self._is_lying_col(pair_block_position):
+			col_1 += 1
+			col_2 += 1
+
+		new_pair_block_position = ((row_1, col_1),(row_2, col_2))
+		return new_pair_block_position
+
+	def _is_valid_block_position(self, pair_block_position):
 		(single_block_position_1, single_block_position_2) = pair_block_position
 
 		# check with map's dimension
@@ -210,13 +324,24 @@ class Bloxorz(Problem):
 		return True
 
 	def _get_move_consequence(self, pair_block_position, bridge_status_list):
-		pass
+		return (pair_block_position, bridge_status_list)
 
 	def _is_valid_state(self, state):
 		self._parse_state_to_map(state)
 
-	def _get_distance_to_goal(self, single_block_position_1, single_block_position_2):
-		pass
+	def _get_distance_to_goal(self, pair_block_position):
+		(single_block_position_1, single_block_position_2) = pair_block_position
+		goal_position = self._stage_map.get_goal_position()
+		distance_1 = self._get_distance(single_block_position_1, goal_position)
+		distance_2 = self._get_distance(single_block_position_2, goal_position)
+		return distance_1 + distance_2
+
+	def _get_distance(self, position_1, position_2):
+		# move by row or col only
+		(row_1, col_1) = position_1
+		(row_2, col_2) = position_2
+
+		return abs(row_1 - row_2) + abs(col_1 - col_2)
 
 	def _parse_state_to_map(self, state):
 		list_bridge_status = state[1]
@@ -230,46 +355,3 @@ class Bloxorz(Problem):
 			self.draw_map(self.initial_state)
 		else:
 			print('Error: need initial state or input state')
-
-####################################
-# CREATE STAGES
-####################################
-def create_stage_2():
-	stage_2_map_matrix =   [[Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI],  
-							[Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_SW, Square.H_TI, Square.EMPT, Square.EMPT, Square.H_TI, Square.GOAL, Square.H_TI],  
-							[Square.H_TI, Square.H_TI, Square.S_SW, Square.H_TI, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI],  
-							[Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI],  
-							[Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI],  
-							[Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT]]
-
-	stage_2_bridge_positions = [
-		(4,4), (4,5), (4,10), (4,11)]
-
-	stage_2_switch_bridge_dict = {
-		(2,2) : [(0,0), (1,0)],
-	 	(1,8) : [(2,0), (3,0)]}
-
-	stage_2_split_port_dest_dict = None;
-
-	stage_2_map = Map()
-	stage_2_map.set_map(stage_2_map_matrix, stage_2_bridge_positions, stage_2_switch_bridge_dict, stage_2_split_port_dest_dict)
-
-	stage_2_problem = Bloxorz(stage_2_map)
-	stage_2_initial_state = ( ((4,1), (4,1)), (0,0,0,0) )
-	stage_2_problem.set_initial_state(stage_2_initial_state)
-
-	return stage_2_problem
-
-def create_stage(stage_number):
-	return {
-		2 : create_stage_2
-	}[stage_number]()
-
-####################################
-# MAIN
-####################################
-def main():
-	stage_2 = create_stage(2)
-
-if __name__ == '__main__':
-	main()

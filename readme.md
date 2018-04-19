@@ -140,7 +140,7 @@ State 3
 		[EMPT,EMPT,EMPT,EMPT,EMPT,EMPT,EMPT,EMPT,EMPT,EMPT,EMPT,EMPT,H_TI,H_TI,H_TI],  
 		]  
 3. Goal stage: 
-	[[(13,3),(13,3)],[]]
+	[[(3,13),(3,13)],[]]
 4. Brides: None
 
 ## Stage 4:
