@@ -32,7 +32,7 @@ class BloxorzCreator(object):
 		stage_2_map.set_map(stage_2_map_matrix, stage_2_bridge_positions, stage_2_switch_bridge_dict, stage_2_split_port_dest_dict)
 
 		stage_2_problem = Bloxorz(stage_2_map)
-		stage_2_initial_state = ( ((4,1), (4,1)), (0,0,0,0) )
+		stage_2_initial_state = ( ((4,1), (4,1)), (Square.EMPT,Square.EMPT,Square.EMPT,Square.EMPT) )
 		stage_2_problem.set_initial_state(stage_2_initial_state)
 
 		return stage_2_problem
@@ -82,27 +82,30 @@ def main():
 	stage_3 = bloxorz_creator.create_stage(3)
 
 	print('DFS:')
-	dfs_solver = DepthFirstSearchSolver(stage_3)
+	dfs_solver = DepthFirstSearchSolver(stage_2)
 	goal_node = dfs_solver.solve()
 	# print(dfs_solver.trace_back(goal_node))
 	solution_path = dfs_solver.trace_back(goal_node)
 	print_movement(solution_path)
 	print("Visited: ", dfs_solver.num_visited_nodes, "node(s)")
+	print("Num steps: ", len(solution_path) - 1)
 
 	print('BrFS:')
-	brfs_solver = BreadthFirstSearchSolver(stage_3)
+	brfs_solver = BreadthFirstSearchSolver(stage_2)
 	goal_node = brfs_solver.solve()
 	# print(brfs_solver.trace_back(goal_node))
 	solution_path = brfs_solver.trace_back(goal_node)
 	print_movement(solution_path)
 	print("Visited: ", brfs_solver.num_visited_nodes, "node(s)")
+	print("Num steps: ", len(solution_path) - 1)
 
 	print('BFS:')
-	bfs_solver = BestFirstSearchSolver(stage_3)
+	bfs_solver = BestFirstSearchSolver(stage_2)
 	goal_node = bfs_solver.solve()
 	solution_path = bfs_solver.trace_back(goal_node)
 	print_movement(solution_path)
 	print("Visited: ", bfs_solver.num_visited_nodes, "node(s)")
+	print("Num steps: ", len(solution_path) - 1)
 
 if __name__ == '__main__':
 	main()
