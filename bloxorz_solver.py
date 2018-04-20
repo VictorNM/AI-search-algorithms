@@ -13,15 +13,18 @@ class BloxorzCreator(object):
 			8 	: self.create_stage_8,
 			9 	: self.create_stage_9,
 			10	: self.create_stage_10,
+			11	: self.create_stage_11,
 		}[stage_number]()
 
 	def create_stage_2(self):
-		stage_2_map_matrix =   [[Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI],  
-								[Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_SW, Square.H_TI, Square.EMPT, Square.EMPT, Square.H_TI, Square.GOAL, Square.H_TI],  
-								[Square.H_TI, Square.H_TI, Square.S_SW, Square.H_TI, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI],  
-								[Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI],  
-								[Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI],  
-								[Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT]]
+		stage_2_map_matrix =   [
+			[0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1],  
+			[1, 1, 1, 1, 0, 0, 1, 1, 3, 1, 0, 0, 1, 6, 1],  
+			[1, 1, 4, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1],  
+			[1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1],  
+			[1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1],  
+			[1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0],
+		]
 
 		stage_2_bridge_positions = [
 			(4,4), (4,5), (4,10), (4,11)]
@@ -36,19 +39,19 @@ class BloxorzCreator(object):
 		stage_2_map.set_map(stage_2_map_matrix, stage_2_bridge_positions, stage_2_switch_bridge_dict, stage_2_split_port_dest_dict)
 
 		stage_2_problem = Bloxorz(stage_2_map)
-		stage_2_initial_state = ( ((4,1), (4,1)), (Square.EMPT,Square.EMPT,Square.EMPT,Square.EMPT) )
+		stage_2_initial_state = ( ((4,1), (4,1)), (0,0,0,0) )
 		stage_2_problem.set_initial_state(stage_2_initial_state)
 
 		return stage_2_problem
 
 	def create_stage_3(self):
 		map_matrix = [
-			[Square.EMPT,Square.EMPT,Square.EMPT,Square.EMPT,Square.EMPT,Square.EMPT,Square.H_TI,Square.H_TI,Square.H_TI,Square.H_TI,Square.H_TI,Square.H_TI,Square.H_TI,Square.EMPT,Square.EMPT],  
-			[Square.H_TI,Square.H_TI,Square.H_TI,Square.H_TI,Square.EMPT,Square.EMPT,Square.H_TI,Square.H_TI,Square.H_TI,Square.EMPT,Square.EMPT,Square.H_TI,Square.H_TI,Square.EMPT,Square.EMPT],  
-			[Square.H_TI,Square.H_TI,Square.H_TI,Square.H_TI,Square.H_TI,Square.H_TI,Square.H_TI,Square.H_TI,Square.H_TI,Square.EMPT,Square.EMPT,Square.H_TI,Square.H_TI,Square.H_TI,Square.H_TI],  
-			[Square.H_TI,Square.H_TI,Square.H_TI,Square.H_TI,Square.EMPT,Square.EMPT,Square.EMPT,Square.EMPT,Square.EMPT,Square.EMPT,Square.EMPT,Square.H_TI,Square.H_TI,Square.GOAL,Square.H_TI],  
-			[Square.H_TI,Square.H_TI,Square.H_TI,Square.H_TI,Square.EMPT,Square.EMPT,Square.EMPT,Square.EMPT,Square.EMPT,Square.EMPT,Square.EMPT,Square.H_TI,Square.H_TI,Square.H_TI,Square.H_TI],  
-			[Square.EMPT,Square.EMPT,Square.EMPT,Square.EMPT,Square.EMPT,Square.EMPT,Square.EMPT,Square.EMPT,Square.EMPT,Square.EMPT,Square.EMPT,Square.EMPT,Square.H_TI,Square.H_TI,Square.H_TI],  
+			[0,0,0,0,0,0,1,1,1,1,1,1,1,0,0],  
+			[1,1,1,1,0,0,1,1,1,0,0,1,1,0,0],  
+			[1,1,1,1,1,1,1,1,1,0,0,1,1,1,1],  
+			[1,1,1,1,0,0,0,0,0,0,0,1,1,6,1],  
+			[1,1,1,1,0,0,0,0,0,0,0,1,1,1,1],  
+			[0,0,0,0,0,0,0,0,0,0,0,0,1,1,1],  
 			]
 
 		bridge_positions = []
@@ -65,16 +68,16 @@ class BloxorzCreator(object):
 		return stage_3_problem
 
 	def create_stage_5(self):
-		map_matrix = [	[Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI],
-						[Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.S_SW, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI],
-						[Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI],
-						[Square.EMPT, Square.H_TI, Square.H_TI, Square.S_SW, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT],
-						[Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT],
-						[Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.S_SW, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT],
-						[Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.S_SW],
-						[Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI],
-						[Square.H_TI, Square.GOAL, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT],
-						[Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT]]
+		map_matrix = [	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1],
+						[0, 1, 1, 1, 1, 1, 1, 1, 4, 1, 1, 1, 1, 1, 1],
+						[0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1],
+						[0, 1, 1, 4, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						[0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						[0, 0, 0, 1, 1, 1, 4, 1, 1, 1, 1, 1, 1, 0, 0],
+						[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 4],
+						[1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1],
+						[1, 6, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
+						[1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
 
 		bridge_positions = [(1,5),(1,6),(5,8),(5,9),(8,5),(8,6)]
 		switch_bridge_dict = {
@@ -85,7 +88,7 @@ class BloxorzCreator(object):
 		}
 		split_port_dest_dict = {}
 		start_position = ((1,13), (1,13))
-		start_bridge_status = (Square.H_TI,Square.H_TI,Square.H_TI,Square.H_TI,Square.H_TI,Square.H_TI)
+		start_bridge_status = (1,1,1,1,1,1)
 
 		stage_map = Map()
 		stage_map.set_map(map_matrix, bridge_positions, switch_bridge_dict, split_port_dest_dict)
@@ -98,15 +101,15 @@ class BloxorzCreator(object):
 
 	def create_stage_8(self):
 		map_matrix = [
-			[Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT],
-			[Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT],
-			[Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT],
-			[Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI],
-			[Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.SPLI, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.GOAL, Square.H_TI],
-			[Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI],
-			[Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT],
-			[Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT],
-			[Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT]
+			[0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0],
+			[0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0],
+			[0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0],
+			[1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1],
+			[1, 1, 1, 1, 5, 1, 0, 0, 0, 1, 1, 1, 1, 6, 1],
+			[1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1],
+			[0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0],
+			[0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0],
+			[0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0]
 		]
 
 		bridge_positions = []
@@ -128,11 +131,11 @@ class BloxorzCreator(object):
 
 	def create_stage_9(self):
 		map_matrix = [
-			[Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI],
-			[Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.SPLI, Square.H_TI],
-			[Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI],
-			[Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.GOAL, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT],
-			[Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT],
+			[1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1],
+			[1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 5, 1],
+			[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+			[0, 0, 0, 0, 0, 0, 1, 6, 1, 0, 0, 0, 0, 0, 0],
+			[0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0],
 		]
 
 		bridge_positions = []
@@ -154,16 +157,16 @@ class BloxorzCreator(object):
 
 	def create_stage_10(self):
 		map_matrix = [
-			[Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI],
-			[Square.H_TI, Square.GOAL, Square.H_TI, Square.EMPT, Square.EMPT, Square.H_TI, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.SPLI, Square.H_TI],
-			[Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT],
-			[Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT],
-			[Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.EMPT],
-			[Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.EMPT],
-			[Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.EMPT],
-			[Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.EMPT],
-			[Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.EMPT],
-			[Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.S_SW, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_SW, Square.H_TI, Square.EMPT],
+			[1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1],
+			[1, 6, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 5, 1],
+			[1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0],
+			[0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0],
+			[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0],
+			[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+			[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+			[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0],
+			[0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0],
+			[0, 0, 0, 0, 1, 4, 0, 0, 1, 1, 1, 3, 1, 0],
 		]
 
 		bridge_positions = [ (1,3), (1,4), (1,6), (1,7), (2,12), (3,12) ]
@@ -175,7 +178,38 @@ class BloxorzCreator(object):
 			(1,12) : [ (1,9), (1,12) ]
 		}
 		start_position = ( (1,9), (1,9) )
-		start_bridge_status = (Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT)
+		start_bridge_status = (0, 0, 0, 0, 0, 0)
+
+		stage_map = Map()
+		stage_map.set_map(map_matrix, bridge_positions, switch_bridge_dict, split_port_dest_dict)
+
+		stage_problem = Bloxorz(stage_map)
+		initial_state = (start_position, start_bridge_status)
+		stage_problem.set_initial_state(initial_state)
+
+		return stage_problem
+
+	def create_stage_11(self):
+		map_matrix = [
+			[0,1,1,1,1,0,0,0,0,0,0,0],
+			[0,1,6,1,1,0,0,0,0,0,0,0],
+			[0,1,1,1,0,0,0,0,0,0,0,0],
+			[0,1,0,0,0,1,1,1,1,1,1,0],
+			[0,1,0,0,0,1,1,0,0,1,1,0],
+			[1,1,1,1,1,1,1,0,0,1,1,1],
+			[0,0,0,0,0,1,2,0,0,0,0,1],
+			[0,0,0,0,0,1,1,1,1,0,0,1],
+			[0,0,0,0,0,1,1,1,1,1,1,1],
+			[0,0,0,0,0,0,0,0,1,1,1,0],
+		]
+
+		bridge_positions = [ (0,4), (1,4) ]
+		switch_bridge_dict = {
+			(6,6) 	: [ (0,-1), (1,-1) ],
+		}
+		split_port_dest_dict = {}
+		start_position = ( (5,0), (5,0) )
+		start_bridge_status = (1,1)
 
 		stage_map = Map()
 		stage_map.set_map(map_matrix, bridge_positions, switch_bridge_dict, split_port_dest_dict)
