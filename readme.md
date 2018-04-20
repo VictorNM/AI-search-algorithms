@@ -45,6 +45,10 @@ State 3
 	2	=> ~~( (1,1) , (1,1) , (2,-1) )~~ {(1,1):{1:1,2:-1}}
 	+ explain: {switch_position:{tile_position:action,...}}
 - Mapping between split port - split destination
+	{
+		port_position : (dest_position_1, dest_position_2),
+		...
+	}
 
 ## State:
 
