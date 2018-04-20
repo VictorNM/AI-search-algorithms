@@ -50,9 +50,13 @@ class Solver:
 		self._problem = problem
 		self._current_node = None
 		self.num_visited_nodes = 0
+		self._max_visited_node = 0
 
 	def set_problem(self, problem):
 		self._problem = problem
+
+	def set_max_visited_node(self, max_visited_node):
+		self._max_visited_node = max_visited_node
 
 	def solve(self):
 		if self._has_set_initial_state():
@@ -89,6 +93,10 @@ class SearchSolver(Solver):
 			
 			if self._is_solution(self._current_node):
 				return self._current_node
+
+			# reach the limit
+			if self.num_visited_nodes == self._max_visited_node:
+				return None
 
 			children_nodes = self.expand_children_of_current_node()
 			# get nodes that satisfy the algorithm

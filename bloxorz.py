@@ -63,8 +63,8 @@ class Map(object):
 
 	def __str__(self):
 		value_matrix = [[int(self._map_matrix[row][col])
-						for y in range(len(self._map_matrix[x]))]
-						for x in range(len(self._map_matrix))]
+						for col in range(len(self._map_matrix[row]))]
+						for row in range(len(self._map_matrix))]
 
 		return str(np.matrix(value_matrix))
 
@@ -101,6 +101,10 @@ class Bloxorz(Problem):
 
 	def get_heuristic_rank(self, state):
 		pair_block_position = state[0]
+		bridge_status_list = state[1]
+		total_open = sum(1 for bridge_status in bridge_status_list if bridge_status == Square.H_TI)
+		# return (total_open, self._get_distance_to_goal(pair_block_position))
+		# return (self._get_distance_to_goal(pair_block_position), total_open)
 		return self._get_distance_to_goal(pair_block_position)
 
 	def set_initial_state(self, initial_state):
@@ -311,19 +315,15 @@ class Bloxorz(Problem):
 		# check with map's dimension
 		if (not self._stage_map.is_in_map(single_block_position_1) or
 			not self._stage_map.is_in_map(single_block_position_2)):
-			# print('out of map')
 			return False
-
 		# check empty
 		if (self._stage_map.get_map_value(single_block_position_1) == Square.EMPT or
 			self._stage_map.get_map_value(single_block_position_2) == Square.EMPT):
-			# print('on empty')
 			return False
 
 		# check solf tile
 		if (self._is_standing(pair_block_position) and
 			self._stage_map.get_map_value(single_block_position_1) == Square.S_TI):
-			# print('stand on solf tile')
 			return False
 
 		return True
@@ -344,13 +344,9 @@ class Bloxorz(Problem):
 			bridge_status_list = self._change_list_bridge_status(switch_position, bridge_status_list)
 
 		# check on split port
-		# print('check ', pair_block_position, end=': ')
 		if self._is_on_split_port(pair_block_position):
-			# print('on split')
 			split_port_position = pair_block_position[0]
 			pair_block_position = self._move_to_split_dest(split_port_position)
-		# else:
-		# 	print('not on split')
 
 		return (pair_block_position, bridge_status_list)
 
@@ -411,14 +407,8 @@ class Bloxorz(Problem):
 		list_bridge_status = state[1]
 		self._stage_map.parse_bridge_status(list_bridge_status)
 
-	def draw_map(self, state = None):
-		if state is not None:
-			self._parse_state_to_map(state)
-			print(self._stage_map)
-		elif self.initial_state is not None:
-			self.draw_map(self.initial_state)
-		else:
-			print('Error: need initial state or input state')
+	def draw_map(self):
+		print(self._stage_map)
 
 	def print_movement(self, state_path):
 		for i in range(1, len(state_path)):			
@@ -430,14 +420,14 @@ class Bloxorz(Problem):
 				(row_prev, col_prev) = pair_position_prev[0]
 				(row_now, col_now) = pair_position_now[0]
 
-				if row_now < row_prev: print('UP', end=' ')
-				elif row_now > row_prev: print('DOWN', end=' ')
-				elif col_now < col_prev: print('LEFT', end=' ')
-				elif col_now > col_prev: print('RIGHT', end=' ')
+				if row_now < row_prev: print('[UP]', end=' ')
+				elif row_now > row_prev: print('[DOWN]', end=' ')
+				elif col_now < col_prev: print('[LEFT]', end=' ')
+				elif col_now > col_prev: print('[RIGHT]', end=' ')
 
 			elif (not self._is_splitting(pair_position_prev) and
 					self._is_splitting(pair_position_now)):
-				print('move to split port')
+				print('[move to split port]', end=' ')
 
 			else:
 				(row_prev_1, col_prev_1) = pair_position_prev[0]
@@ -446,14 +436,16 @@ class Bloxorz(Problem):
 				(row_now_2, col_now_2) = pair_position_now[1]
 
 				if pair_position_prev[0] != pair_position_now[0]:
-					print('move block at ', pair_position_prev[0], end=' ')
-					if row_now_1 < row_prev_1: print('UP', end=' ')
-					elif row_now_1 > row_prev_1: print('DOWN', end=' ')
-					elif col_now_1 < col_prev_1: print('LEFT', end=' ')
-					elif col_now_1 > col_prev_1: print('RIGHT', end=' ')
+					print('[', pair_position_prev[0], end=': ')
+					if row_now_1 < row_prev_1: print('UP]', end=' ')
+					elif row_now_1 > row_prev_1: print('DOWN]', end=' ')
+					elif col_now_1 < col_prev_1: print('LEFT]', end=' ')
+					elif col_now_1 > col_prev_1: print('RIGHT]', end=' ')
 				else:
-					print('move block at ', pair_position_prev[1], end=' ')
-					if row_now_2 < row_prev_2: print('UP', end=' ')
-					elif row_now_2 > row_prev_2: print('DOWN', end=' ')
-					elif col_now_2 < col_prev_2: print('LEFT', end=' ')
-					elif col_now_2 > col_prev_2: print('RIGHT', end=' ')
+					print('[', pair_position_prev[1], end=': ')
+					if row_now_2 < row_prev_2: print('UP]', end=' ')
+					elif row_now_2 > row_prev_2: print('DOWN]', end=' ')
+					elif col_now_2 < col_prev_2: print('LEFT]', end=' ')
+					elif col_now_2 > col_prev_2: print('RIGHT]', end=' ')
+
+		print()

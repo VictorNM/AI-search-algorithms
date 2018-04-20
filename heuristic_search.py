@@ -6,6 +6,8 @@
 from solver import *
 from queue import PriorityQueue
 import time
+import random
+import math
 
 class BestFirstSearchSolver(SearchSolver):
 	def __init__(self, problem):
@@ -15,7 +17,7 @@ class BestFirstSearchSolver(SearchSolver):
 
 	def _put_to_open_list(self, node):
 		priority = self._problem.get_heuristic_rank(node.state)
-		self._open_list.put((priority, time.time(), node))
+		self._open_list.put((priority, -time.time(), node))
 
 	def _is_empty_open_list(self):
 		return self._open_list.qsize() == 0
@@ -24,11 +26,9 @@ class BestFirstSearchSolver(SearchSolver):
 		return self._open_list.get()[2]
 
 	def _get_satisfying_nodes(self, list_of_nodes):	
-		satisfying_nodes = []
-
-		for node in list_of_nodes:
-			if node.state not in self._closed_set:
-				satisfying_nodes.append(node)
+		satisfying_nodes = [node
+							for node in list_of_nodes
+							if node.state not in self._closed_set]
 
 		return satisfying_nodes
 
@@ -79,3 +79,32 @@ class SteepestAscentHillClimbingSolver(HillClimbingSolver):
 		if best_rank < current_rank:
 			satisfying_nodes.append(best_node)
 		return satisfying_nodes
+
+
+class SimulatedAnnealing(HillClimbingSolver):
+	def __init__(self, problem):
+		super(SimulatedAnnealing, self).__init__(problem)
+
+	def _get_satisfying_nodes(self, list_of_nodes):
+		if self._max_visited_node <= 0:
+			print('Error: you must set limit node to use this algorimth')
+			return []
+
+		satisfying_nodes = []
+
+		new_node = random.choice(list_of_nodes)
+		current_rank = self._problem.get_heuristic_rank(self._current_node.state)
+		new_rank = self._problem.get_heuristic_rank(new_node.state)
+		
+		delta_E = new_rank - current_rank
+		if delta_E < 0:	# new_rank is better
+			satisfying_nodes.append(new_node)
+		else:
+			T = self._max_visited_node - self.num_visited_nodes
+			p = math.exp(-delta_E / T)
+			print(p)
+			if random.random() < p: satisfying_nodes.append(new_node)
+			else: satisfying_nodes.append(self._current_node)
+
+		return satisfying_nodes
+		

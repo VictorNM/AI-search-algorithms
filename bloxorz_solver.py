@@ -7,10 +7,12 @@ class BloxorzCreator(object):
 	
 	def create_stage(self, stage_number):
 		return {
-			2 : self.create_stage_2,
-			3 : self.create_stage_3,
-			5 : self.create_stage_5,
-			8 : self.create_stage_8,
+			2 	: self.create_stage_2,
+			3 	: self.create_stage_3,
+			5 	: self.create_stage_5,
+			8 	: self.create_stage_8,
+			9 	: self.create_stage_9,
+			10	: self.create_stage_10,
 		}[stage_number]()
 
 	def create_stage_2(self):
@@ -76,33 +78,36 @@ class BloxorzCreator(object):
 
 		bridge_positions = [(1,5),(1,6),(5,8),(5,9),(8,5),(8,6)]
 		switch_bridge_dict = {
-				(1,8) : [(0,0), (1,0)],
-				(3,3) : [(4,1), (5,1)],
-				(5,6) : [(4,-1), (5,-1)],
-				(6,14): [(4,0), (5,0)]}
+				(1,8) : [ (0,0), (1,0) ],
+				(3,3) : [ (4,1), (5,1) ],
+				(5,6) : [ (4,-1), (5,-1) ],
+				(6,14): [ (4,0), (5,0) ]
+		}
 		split_port_dest_dict = {}
+		start_position = ((1,13), (1,13))
+		start_bridge_status = (Square.H_TI,Square.H_TI,Square.H_TI,Square.H_TI,Square.H_TI,Square.H_TI)
 
 		stage_map = Map()
 		stage_map.set_map(map_matrix, bridge_positions, switch_bridge_dict, split_port_dest_dict)
 
 		stage_problem = Bloxorz(stage_map)
-		initial_state = (
-			((1,13),(1,13)),
-			(Square.H_TI,Square.H_TI,Square.H_TI,Square.H_TI,Square.H_TI,Square.H_TI))
+		initial_state = (start_position, start_bridge_status)
 		stage_problem.set_initial_state(initial_state)
 
 		return stage_problem
 
 	def create_stage_8(self):
-		map_matrix = [	[Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT],
-						[Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT],
-						[Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT],
-						[Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI],
-						[Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.SPLI, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.GOAL, Square.H_TI],
-						[Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI],
-						[Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT],
-						[Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT],
-						[Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT]]
+		map_matrix = [
+			[Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT],
+			[Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT],
+			[Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT],
+			[Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI],
+			[Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.SPLI, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.GOAL, Square.H_TI],
+			[Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI],
+			[Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT],
+			[Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT],
+			[Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT]
+		]
 
 		bridge_positions = []
 		switch_bridge_dict = {}
@@ -121,38 +126,102 @@ class BloxorzCreator(object):
 
 		return stage_problem
 
+	def create_stage_9(self):
+		map_matrix = [
+			[Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI],
+			[Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.SPLI, Square.H_TI],
+			[Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI],
+			[Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.GOAL, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT],
+			[Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT],
+		]
+
+		bridge_positions = []
+		switch_bridge_dict = {}
+		split_port_dest_dict = {
+			(1,13) : [ (1,2), (1,12) ]
+		}
+		start_position = ( (1,1), (1,1) )
+		start_bridge_status = ()
+
+		stage_map = Map()
+		stage_map.set_map(map_matrix, bridge_positions, switch_bridge_dict, split_port_dest_dict)
+
+		stage_problem = Bloxorz(stage_map)
+		initial_state = (start_position, start_bridge_status)
+		stage_problem.set_initial_state(initial_state)
+
+		return stage_problem
+
+	def create_stage_10(self):
+		map_matrix = [
+			[Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI],
+			[Square.H_TI, Square.GOAL, Square.H_TI, Square.EMPT, Square.EMPT, Square.H_TI, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.SPLI, Square.H_TI],
+			[Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT],
+			[Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT],
+			[Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.EMPT],
+			[Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.EMPT],
+			[Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.EMPT],
+			[Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.EMPT],
+			[Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_TI, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.EMPT],
+			[Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.H_TI, Square.S_SW, Square.EMPT, Square.EMPT, Square.H_TI, Square.H_TI, Square.H_TI, Square.H_SW, Square.H_TI, Square.EMPT],
+		]
+
+		bridge_positions = [ (1,3), (1,4), (1,6), (1,7), (2,12), (3,12) ]
+		switch_bridge_dict = {
+			(9,5) 	: [ (0,0), (1,0) ],
+			(9,11) 	: [ (2,0), (3,0), (4,0), (5,0) ]
+		}
+		split_port_dest_dict = {
+			(1,12) : [ (1,9), (1,12) ]
+		}
+		start_position = ( (1,9), (1,9) )
+		start_bridge_status = (Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT, Square.EMPT)
+
+		stage_map = Map()
+		stage_map.set_map(map_matrix, bridge_positions, switch_bridge_dict, split_port_dest_dict)
+
+		stage_problem = Bloxorz(stage_map)
+		initial_state = (start_position, start_bridge_status)
+		stage_problem.set_initial_state(initial_state)
+
+		return stage_problem
+
 ####################################
 # MAIN
 ####################################
 def main():
 
 	num_stage = int(input("Enter stage: "))
+	max_node = 0
+
 
 	bloxorz_creator = BloxorzCreator()
 	stage = bloxorz_creator.create_stage(num_stage)
+	stage.draw_map()
 	# stage_2 = bloxorz_creator.create_stage(2)
 	# stage_3 = bloxorz_creator.create_stage(3)
 	# stage_5 = bloxorz_creator.create_stage(5)
 
-	# print('\n####################################')
-	# print('Depth First Search:')
-	# print('####################################\n')
-	# dfs_solver = DepthFirstSearchSolver(stage)
-	# goal_node = dfs_solver.solve()
-	# # print(dfs_solver.trace_back(goal_node))
-	# solution_path = dfs_solver.trace_back(goal_node)
-	# # print_movement(solution_path)
-	# print("Visited: ", dfs_solver.num_visited_nodes, "node(s)")
-	# print("Num steps: ", len(solution_path) - 1)
+	print('\n####################################')
+	print('Depth First Search:')
+	print('####################################\n')
+	dfs_solver = DepthFirstSearchSolver(stage)
+	dfs_solver.set_max_visited_node(max_node)
+	goal_node = dfs_solver.solve()
+	solution_path = dfs_solver.trace_back(goal_node)
+	# # stage.print_movement(solution_path)
+	print("Visited: ", dfs_solver.num_visited_nodes, "node(s)")
+	print("Num steps: ", len(solution_path) - 1)
 
 	# print('\n####################################')
 	# print('Breadth First Search:')
 	# print('####################################\n')
 	# brfs_solver = BreadthFirstSearchSolver(stage)
+	# brfs_solver.set_max_visited_node(max_node)
 	# goal_node = brfs_solver.solve()
 	# solution_path = brfs_solver.trace_back(goal_node)
-	# # print(solution_path)
-	# # print_movement(solution_path)
+	# # # print(solution_path)
+	# # stage.print_movement(solution_path)
 	# print("Visited: ", brfs_solver.num_visited_nodes, "node(s)")
 	# print("Num steps: ", len(solution_path) - 1)
 
@@ -160,12 +229,35 @@ def main():
 	print('Best First Search:')
 	print('####################################\n')
 	bfs_solver = BestFirstSearchSolver(stage)
+	bfs_solver.set_max_visited_node(max_node)
 	goal_node = bfs_solver.solve()
 	solution_path = bfs_solver.trace_back(goal_node)
 	# print(solution_path)
-	stage.print_movement(solution_path)
+	# stage.print_movement(solution_path)
+	for step in solution_path:
+		print(step[0])
 	print("Visited: ", bfs_solver.num_visited_nodes, "node(s)")
-	print("Num steps: ", len(solution_path) - 1)
+	if solution_path is not None:
+		print("Num steps: ", len(solution_path) - 1)
+	else:
+		print('Cannot solve')
+
+	# print('\n####################################')
+	# print('Simulated Annealing:')
+	# print('####################################\n')
+	# sa_solver = SimulatedAnnealing(stage)
+	# sa_solver.set_max_visited_node(max_node)
+	# goal_node = sa_solver.solve()
+	# solution_path = sa_solver.trace_back(goal_node)
+	# # print(solution_path)
+	# # stage.print_movement(solution_path)
+	# # for step in solution_path:
+	# # 	print(step[0])
+	# print("Visited: ", sa_solver.num_visited_nodes, "node(s)")
+	# if solution_path is not None:
+	# 	print("Num steps: ", len(solution_path) - 1)
+	# else:
+	# 	print('Cannot solve')
 
 if __name__ == '__main__':
 	main()
