@@ -119,6 +119,7 @@ class TestBloxorz(unittest.TestCase):
 			((0,0), (1,0)),			# lying Y 1 block on empty
 			((1,3), (1,4)),			# lying X 1 block on empty
 			((3,4), (3,3)),			# lying X 1 block on empty
+			((5,5), (5,6)),			# lying X 1 block on empty
 		]
 
 		for position in false_list:

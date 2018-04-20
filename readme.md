@@ -45,6 +45,10 @@ State 3
 	2	=> ~~( (1,1) , (1,1) , (2,-1) )~~ {(1,1):{1:1,2:-1}}
 	+ explain: {switch_position:{tile_position:action,...}}
 - Mapping between split port - split destination
+	{
+		port_position : (dest_position_1, dest_position_2),
+		...
+	}
 
 ## State:
 
@@ -151,7 +155,7 @@ State 3
 
 ## Stage 5:
 
-1. Passcode: 528431
+1. Passcode: 028431
 2. Init stage: ((1,14),(1,14), (1,1,1,1,1,1))
 3. Map: 10x16
 
