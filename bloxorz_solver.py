@@ -35,11 +35,14 @@ class BloxorzCreator(object):
 
 		stage_2_split_port_dest_dict = {};
 
+		start_position = ( (4,1), (4,1) )
+		start_bridge_status = (0,0,0,0)
+
 		stage_2_map = Map()
 		stage_2_map.set_map(stage_2_map_matrix, stage_2_bridge_positions, stage_2_switch_bridge_dict, stage_2_split_port_dest_dict)
 
 		stage_2_problem = Bloxorz(stage_2_map)
-		stage_2_initial_state = ( ((4,1), (4,1)), (0,0,0,0) )
+		stage_2_initial_state = ( start_position, start_bridge_status )
 		stage_2_problem.set_initial_state(stage_2_initial_state)
 
 		return stage_2_problem
@@ -58,11 +61,14 @@ class BloxorzCreator(object):
 		switch_bridge_dict = {}
 		split_port_dest_dict = {}
 
+		start_position = ( (3,1),(3,1) )
+		start_bridge_status = ()
+
 		stage_3_map = Map()
 		stage_3_map.set_map(map_matrix, bridge_positions, switch_bridge_dict, split_port_dest_dict)
 
 		stage_3_problem = Bloxorz(stage_3_map)
-		initial_state = (((3,1),(3,1)),())
+		initial_state = (start_position, start_bridge_status)
 		stage_3_problem.set_initial_state(initial_state)
 
 		return stage_3_problem
@@ -265,16 +271,14 @@ def main():
 	bfs_solver = BestFirstSearchSolver(stage)
 	bfs_solver.set_max_visited_node(max_node)
 	goal_node = bfs_solver.solve()
-	solution_path = bfs_solver.trace_back(goal_node)
+	actions_list = bfs_solver.get_actions_to_goal(goal_node)
+	print(actions_list)
 	# print(solution_path)
 	# stage.print_movement(solution_path)
-	for step in solution_path:
-		print(step[0])
-	print("Visited: ", bfs_solver.num_visited_nodes, "node(s)")
-	if solution_path is not None:
-		print("Num steps: ", len(solution_path) - 1)
-	else:
-		print('Cannot solve')
+	# for step in solution_path:
+	# 	print(step[0])
+	# print("Visited: ", bfs_solver.num_visited_nodes, "node(s)")
+	print("Num steps: ", len(actions_list))
 
 	# print('\n####################################')
 	# print('Simulated Annealing:')

@@ -79,6 +79,20 @@ class Bloxorz(Problem):
 		if initial_state is not None:
 			self.set_initial_state(initial_state)
 
+	def get_all_actions_results(self, current_state):
+		self._parse_state_to_map(current_state)
+		pair_block_position = current_state[0]
+		bridge_status_list = current_state[1]
+
+		action_result_list = []
+
+		action_new_pair_position_list = self._do_all_valid_moves(pair_block_position)
+		for (action, new_pair_position) in action_new_pair_position_list:
+			state = self._get_move_consequence(new_pair_position, bridge_status_list)
+			action_result_list.append((action, state))
+
+		return action_result_list
+
 	def generate_next_states(self, current_state):
 		self._parse_state_to_map(current_state)
 		pair_block_position = current_state[0]
@@ -115,29 +129,29 @@ class Bloxorz(Problem):
 		self._stage_map = stage_map
 
 	def _do_all_valid_moves(self, pair_block_position):
-		new_pair_block_position_list = None
+		action_new_pair_position_list = None
 		if self._is_splitting(pair_block_position):
-			new_pair_block_position_list = [pair_block_position
-							 for pair_block_position in self._do_all_single_moves(pair_block_position)
+			action_new_pair_position_list = [(action, pair_block_position)
+							 for (action, pair_block_position) in self._do_all_single_moves(pair_block_position)
 							 if self._is_valid_block_position(pair_block_position)]
 		else:
-			new_pair_block_position_list = [pair_block_position
-							 for pair_block_position in self._do_all_pair_moves(pair_block_position)
+			action_new_pair_position_list = [(action, pair_block_position)
+							 for (action, pair_block_position) in self._do_all_pair_moves(pair_block_position)
 							 if self._is_valid_block_position(pair_block_position)]
 
-		new_pair_block_position_list = self._adjust_block_position_order(new_pair_block_position_list)
-		return new_pair_block_position_list
+		action_new_pair_position_list = self._adjust_block_position_order(action_new_pair_position_list)
+		return action_new_pair_position_list
 
 	# make sure (3,1) (3,2) is always (3,1) (3,2)
 	# not (3,2) (3,1)
-	def _adjust_block_position_order(self, pair_block_position_list):
+	def _adjust_block_position_order(self, action_new_pair_position_list):
 		adjusted_list = []
-		for pair_block_position in pair_block_position_list:
+		for (action, pair_block_position) in action_new_pair_position_list:
 			(single_block_position_1, single_block_position_2) = pair_block_position
 			if single_block_position_1 > single_block_position_2:
-				adjusted_list.append((single_block_position_2, single_block_position_1))
+				adjusted_list.append((action, (single_block_position_2, single_block_position_1)))
 			else:
-				adjusted_list.append(pair_block_position)
+				adjusted_list.append((action, pair_block_position))
 		return adjusted_list
 
 	def _is_standing(self, pair_block_position):
@@ -163,60 +177,71 @@ class Bloxorz(Problem):
 		return abs(row_1 - row_2) + abs(col_1 - col_2) > 1
 
 	def _do_all_single_moves(self, pair_block_position):
-		new_pair_block_position_list = []
+		action_new_pair_position_list = []
 		(single_block_position_1, single_block_position_2) = pair_block_position
 
 		# move up
 		new_pair_position_up_1 = (self._move_single_up(single_block_position_1), single_block_position_2)
 		new_pair_position_up_2 = (single_block_position_1, self._move_single_up(single_block_position_2))
 
-		new_pair_block_position_list.append(new_pair_position_up_1)
-		new_pair_block_position_list.append(new_pair_position_up_2)
+		action_up_1 = "{position}: UP".format(position=single_block_position_1)
+		action_new_pair_position_list.append((action_up_1, new_pair_position_up_1))
+
+		action_up_2 = "{position}: UP".format(position=single_block_position_2)
+		action_new_pair_position_list.append((action_up_2, new_pair_position_up_2))
 
 		# move down
 		new_pair_position_down_1 = (self._move_single_down(single_block_position_1), single_block_position_2)
 		new_pair_position_down_2 = (single_block_position_1, self._move_single_down(single_block_position_2))
 
-		new_pair_block_position_list.append(new_pair_position_down_1)
-		new_pair_block_position_list.append(new_pair_position_down_2)
+		action_down_1 = "{position}: DOWN".format(position=single_block_position_1)
+		action_new_pair_position_list.append((action_down_1, new_pair_position_down_1))
+
+		action_down_1 = "{position}: DOWN".format(position=single_block_position_2)
+		action_new_pair_position_list.append((action_down_2, new_pair_position_down_2))
 
 		# move left
 		new_pair_position_left_1 = (self._move_single_left(single_block_position_1), single_block_position_2)
 		new_pair_position_left_2 = (single_block_position_1, self._move_single_left(single_block_position_2))
 
-		new_pair_block_position_list.append(new_pair_position_left_1)
-		new_pair_block_position_list.append(new_pair_position_left_2)
+		action_left_1 = "{position}: LEFT".format(position=single_block_position_1)
+		action_new_pair_position_list.append((action_left_1, new_pair_position_left_1))
+
+		action_left_2 = "{position}: LEFT".format(position=single_block_position_2)
+		action_new_pair_position_list.append((action_left_2, new_pair_position_left_2))
 
 		# move right
 		new_pair_position_right_1 = (self._move_single_right(single_block_position_1), single_block_position_2)
 		new_pair_position_right_2 = (single_block_position_1, self._move_single_right(single_block_position_2))
 
-		new_pair_block_position_list.append(new_pair_position_right_1)
-		new_pair_block_position_list.append(new_pair_position_right_2)
+		action_right_1 = "{position}: RIGHT".format(position=single_block_position_1)
+		action_new_pair_position_list.append((action_right_1, new_pair_position_right_1))
 
-		return new_pair_block_position_list
+		action_right_2 = "{position}: RIGHT".format(position=single_block_position_2)
+		action_new_pair_position_list.append((action_right_2, new_pair_position_right_2))
+
+		return action_new_pair_position_list
 
 	def _do_all_pair_moves(self, pair_block_position):
-		new_pair_block_position_list = []
+		action_new_pair_position_list = []
 
-		# move up and check validity
+		# move up
 		new_pair_position_up = self._move_pair_up(pair_block_position)
-		new_pair_block_position_list.append(new_pair_position_up)
+		action_new_pair_position_list.append(("UP", new_pair_position_up))
 
 		# move down
 		new_pair_position_down = self._move_pair_down(pair_block_position)
-		new_pair_block_position_list.append(new_pair_position_down)
+		action_new_pair_position_list.append(("DOWN", new_pair_position_down))
 
 		# move left
 		new_pair_position_left = self._move_pair_left(pair_block_position)
-		new_pair_block_position_list.append(new_pair_position_left)
+		action_new_pair_position_list.append(("LEFT", new_pair_position_left))
 
 		# move right
 		new_pair_position_right = self._move_pair_right(pair_block_position)
-		new_pair_block_position_list.append(new_pair_position_right)
+		action_new_pair_position_list.append(("RIGHT", new_pair_position_right))
 
-
-		return new_pair_block_position_list
+		return action_new_pair_position_list
 
 	def _move_single_up(self, single_block_position):
 		(row, col) = single_block_position
