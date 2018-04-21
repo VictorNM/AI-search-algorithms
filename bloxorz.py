@@ -138,21 +138,21 @@ class Bloxorz(Problem):
 			action_new_pair_position_list = [(action, pair_block_position)
 							 for (action, pair_block_position) in self._do_all_pair_moves(pair_block_position)
 							 if self._is_valid_block_position(pair_block_position)]
+		
+		# make sure block_position_1 <= block_position_2
+		adjusted_list = []
+		for (action, position) in action_new_pair_position_list:
+			position = self._adjust_block_position_order(position)
+			adjusted_list.append((action, position))
 
-		action_new_pair_position_list = self._adjust_block_position_order(action_new_pair_position_list)
+		action_new_pair_position_list = adjusted_list
 		return action_new_pair_position_list
 
-	# make sure (3,1) (3,2) is always (3,1) (3,2)
-	# not (3,2) (3,1)
-	def _adjust_block_position_order(self, action_new_pair_position_list):
-		adjusted_list = []
-		for (action, pair_block_position) in action_new_pair_position_list:
-			(single_block_position_1, single_block_position_2) = pair_block_position
-			if single_block_position_1 > single_block_position_2:
-				adjusted_list.append((action, (single_block_position_2, single_block_position_1)))
-			else:
-				adjusted_list.append((action, pair_block_position))
-		return adjusted_list
+	def _adjust_block_position_order(self, pair_block_position):
+		(single_block_position_1, single_block_position_2) = pair_block_position
+		if single_block_position_1 > single_block_position_2:
+			return (single_block_position_2, single_block_position_1)
+		return pair_block_position
 
 	def _is_standing(self, pair_block_position):
 		return pair_block_position[0] == pair_block_position[1]
@@ -197,7 +197,7 @@ class Bloxorz(Problem):
 		action_down_1 = "{position}: DOWN".format(position=single_block_position_1)
 		action_new_pair_position_list.append((action_down_1, new_pair_position_down_1))
 
-		action_down_1 = "{position}: DOWN".format(position=single_block_position_2)
+		action_down_2 = "{position}: DOWN".format(position=single_block_position_2)
 		action_new_pair_position_list.append((action_down_2, new_pair_position_down_2))
 
 		# move left
@@ -434,43 +434,3 @@ class Bloxorz(Problem):
 
 	def draw_map(self):
 		print(self._stage_map)
-
-	def print_movement(self, state_path):
-		for i in range(1, len(state_path)):			
-			pair_position_prev = state_path[i-1][0]
-			pair_position_now = state_path[i][0]
-
-			if (not self._is_splitting(pair_position_prev) and
-				not self._is_splitting(pair_position_now)):
-				(row_prev, col_prev) = pair_position_prev[0]
-				(row_now, col_now) = pair_position_now[0]
-
-				if row_now < row_prev: print('[UP]', end=' ')
-				elif row_now > row_prev: print('[DOWN]', end=' ')
-				elif col_now < col_prev: print('[LEFT]', end=' ')
-				elif col_now > col_prev: print('[RIGHT]', end=' ')
-
-			elif (not self._is_splitting(pair_position_prev) and
-					self._is_splitting(pair_position_now)):
-				print('[move to split port]', end=' ')
-
-			else:
-				(row_prev_1, col_prev_1) = pair_position_prev[0]
-				(row_prev_2, col_prev_2) = pair_position_prev[1]
-				(row_now_1, col_now_1) = pair_position_now[0]
-				(row_now_2, col_now_2) = pair_position_now[1]
-
-				if pair_position_prev[0] != pair_position_now[0]:
-					print('[', pair_position_prev[0], end=': ')
-					if row_now_1 < row_prev_1: print('UP]', end=' ')
-					elif row_now_1 > row_prev_1: print('DOWN]', end=' ')
-					elif col_now_1 < col_prev_1: print('LEFT]', end=' ')
-					elif col_now_1 > col_prev_1: print('RIGHT]', end=' ')
-				else:
-					print('[', pair_position_prev[1], end=': ')
-					if row_now_2 < row_prev_2: print('UP]', end=' ')
-					elif row_now_2 > row_prev_2: print('DOWN]', end=' ')
-					elif col_now_2 < col_prev_2: print('LEFT]', end=' ')
-					elif col_now_2 > col_prev_2: print('RIGHT]', end=' ')
-
-		print()

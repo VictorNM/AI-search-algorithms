@@ -14,6 +14,7 @@ class BloxorzCreator(object):
 			9 	: self.create_stage_9,
 			10	: self.create_stage_10,
 			11	: self.create_stage_11,
+			12	: self.create_stage_12,
 		}[stage_number]()
 
 	def create_stage_2(self):
@@ -226,6 +227,80 @@ class BloxorzCreator(object):
 
 		return stage_problem
 
+	def create_stage_12(self):
+		map_matrix = [
+			[0,0,0,0,0,0,0,0,0,0,0,0,3],
+			[0,0,0,0,0,1,1,1,0,0,1,1,1],
+			[0,0,0,0,0,1,3,1,1,1,1,1,0],
+			[0,0,0,1,1,1,1,1,0,0,1,1,0],
+			[0,0,0,1,6,1,0,0,0,0,1,1,0],
+			[0,1,1,1,1,1,0,0,0,1,1,1,1],
+			[1,1,1,1,0,0,0,0,0,1,1,1,1],
+			[1,1,1,1,0,0,1,1,1,1,1,0,0],
+			[0,0,0,0,0,1,1,1,0,0,0,0,0],
+			[0,0,0,0,0,1,1,1,0,0,0,0,0],
+		]
+
+		bridge_positions = [ (2,12), (6,4) ]
+		switch_bridge_dict = {
+			(2,6) 	: [ (0,0) ],
+			(0,12)	: [ (1,0) ]
+		}
+		split_port_dest_dict = {}
+		start_position = ( (6,2), (6,2) )
+		start_bridge_status = (0,0)
+
+		stage_map = Map()
+		stage_map.set_map(map_matrix, bridge_positions, switch_bridge_dict, split_port_dest_dict)
+
+		stage_problem = Bloxorz(stage_map)
+		initial_state = (start_position, start_bridge_status)
+		stage_problem.set_initial_state(initial_state)
+
+		return stage_problem
+
+def solve_by_DFS(stage, max_node = 0):
+	print('\n####################################')
+	print('Depth First Search:')
+	print('####################################\n')
+
+	dfs_solver = DepthFirstSearchSolver(stage)
+	dfs_solver.set_max_visited_node(max_node)
+	goal_node = dfs_solver.solve()
+	actions_list = dfs_solver.get_actions_to_goal(goal_node)
+	
+	print(actions_list)
+	print("Visited: ", dfs_solver.num_visited_nodes, "node(s)")
+	print("Num steps: ", len(actions_list))
+
+def solve_by_BrFS(stage, max_node = 0):
+	print('\n####################################')
+	print('Breadth First Search:')
+	print('####################################\n')
+
+	brfs_solver = BreadthFirstSearchSolver(stage)
+	brfs_solver.set_max_visited_node(max_node)
+	goal_node = brfs_solver.solve()
+	actions_list = brfs_solver.get_actions_to_goal(goal_node)
+	
+	print(actions_list)
+	print("Visited: ", brfs_solver.num_visited_nodes, "node(s)")
+	print("Num steps: ", len(actions_list))
+
+
+def solve_by_BFS(stage, max_node = 0):
+	print('\n####################################')
+	print('Best First Search:')
+	print('####################################\n')
+	bfs_solver = BestFirstSearchSolver(stage)
+	bfs_solver.set_max_visited_node(max_node)
+	goal_node = bfs_solver.solve()
+	actions_list = bfs_solver.get_actions_to_goal(goal_node)
+
+	print(actions_list)
+	print("Visited: ", bfs_solver.num_visited_nodes, "node(s)")
+	print("Num steps: ", len(actions_list))
+
 ####################################
 # MAIN
 ####################################
@@ -234,68 +309,13 @@ def main():
 	num_stage = int(input("Enter stage: "))
 	max_node = 0
 
-
 	bloxorz_creator = BloxorzCreator()
 	stage = bloxorz_creator.create_stage(num_stage)
 	stage.draw_map()
-	# stage_2 = bloxorz_creator.create_stage(2)
-	# stage_3 = bloxorz_creator.create_stage(3)
-	# stage_5 = bloxorz_creator.create_stage(5)
-
-	print('\n####################################')
-	print('Depth First Search:')
-	print('####################################\n')
-	dfs_solver = DepthFirstSearchSolver(stage)
-	dfs_solver.set_max_visited_node(max_node)
-	goal_node = dfs_solver.solve()
-	solution_path = dfs_solver.trace_back(goal_node)
-	# # stage.print_movement(solution_path)
-	print("Visited: ", dfs_solver.num_visited_nodes, "node(s)")
-	print("Num steps: ", len(solution_path) - 1)
-
-	# print('\n####################################')
-	# print('Breadth First Search:')
-	# print('####################################\n')
-	# brfs_solver = BreadthFirstSearchSolver(stage)
-	# brfs_solver.set_max_visited_node(max_node)
-	# goal_node = brfs_solver.solve()
-	# solution_path = brfs_solver.trace_back(goal_node)
-	# # # print(solution_path)
-	# # stage.print_movement(solution_path)
-	# print("Visited: ", brfs_solver.num_visited_nodes, "node(s)")
-	# print("Num steps: ", len(solution_path) - 1)
-
-	print('\n####################################')
-	print('Best First Search:')
-	print('####################################\n')
-	bfs_solver = BestFirstSearchSolver(stage)
-	bfs_solver.set_max_visited_node(max_node)
-	goal_node = bfs_solver.solve()
-	actions_list = bfs_solver.get_actions_to_goal(goal_node)
-	print(actions_list)
-	# print(solution_path)
-	# stage.print_movement(solution_path)
-	# for step in solution_path:
-	# 	print(step[0])
-	# print("Visited: ", bfs_solver.num_visited_nodes, "node(s)")
-	print("Num steps: ", len(actions_list))
-
-	# print('\n####################################')
-	# print('Simulated Annealing:')
-	# print('####################################\n')
-	# sa_solver = SimulatedAnnealing(stage)
-	# sa_solver.set_max_visited_node(max_node)
-	# goal_node = sa_solver.solve()
-	# solution_path = sa_solver.trace_back(goal_node)
-	# # print(solution_path)
-	# # stage.print_movement(solution_path)
-	# # for step in solution_path:
-	# # 	print(step[0])
-	# print("Visited: ", sa_solver.num_visited_nodes, "node(s)")
-	# if solution_path is not None:
-	# 	print("Num steps: ", len(solution_path) - 1)
-	# else:
-	# 	print('Cannot solve')
+	
+	solve_by_DFS(stage, max_node)
+	solve_by_BrFS(stage, max_node)
+	solve_by_BFS(stage, max_node)
 
 if __name__ == '__main__':
 	main()
