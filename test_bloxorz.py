@@ -1,4 +1,4 @@
-from bloxorz import *
+from bloxorz_2 import *
 from bloxorz_solver import *
 import unittest
 
@@ -110,30 +110,24 @@ class TestBloxorz(unittest.TestCase):
 
 	# TEST VALIDITY
 
-	def test_is_valid_block_position(self):
+	def test_is_valid_state(self):
 		# Test False
 		false_list = [
-			((0,0), (0,-1)),		# lying X 1 block out of map
-			((-1,0), (0,0)),		# lying Y 1 block out of map
-			((0,0), (0,0)), 		# standing on empty
-			((0,0), (1,0)),			# lying Y 1 block on empty
-			((1,3), (1,4)),			# lying X 1 block on empty
-			((3,4), (3,3)),			# lying X 1 block on empty
-			((5,5), (5,6)),			# lying X 1 block on empty
+			(((0,15), (0,15)), (0,0,0,0)),		# standing out of map
+			(((4,4), (4,4)), (0,0,0,0)),		# standing on empty bridge
 		]
 
 		for position in false_list:
-			self.assertFalse(self.bloxorz._is_valid_block_position(position))
+			self.assertFalse(self.bloxorz._is_valid_state(position))
 
 		# Test True
 		true_list = [
-			((1,0), (1,1)),		# valid lying X
-			((1,0), (2,0)),		# valid lying Y
-			((1,0), (3,2)),		# valid splitting
+			(((4,1), (4,1)), (0,0,0,0)),		# standing on hard tile
+			(((4,4), (4,4)), (1,1,0,0)),		# standing on bridge			
 		]
 
 		for position in true_list:
-			self.assertTrue(self.bloxorz._is_valid_block_position(position))
+			self.assertTrue(self.bloxorz._is_valid_state(position))
 
 	# TEST MOVEMENTS
 
@@ -169,18 +163,18 @@ class TestBloxorz(unittest.TestCase):
 		for testcase, expect in testcase_expect_dict.items():
 			self.assertEqual(self.bloxorz._move_single_right(testcase), expect)
 
-	def test_do_all_single_moves(self):
-		testcase_expect_dict = {
-			((3,1), (3,7)) :
-				[((2,1), (3,7)), ((3,1), (2,7)),	# up
-				 ((4,1), (3,7)), ((3,1), (4,7)),	# down
-				 ((3,0), (3,7)), ((3,1), (3,6)),	# left
-				 ((3,2), (3,7)), ((3,1), (3,8)),	# right
-				]
-		}
+	# def test_do_all_single_moves(self):
+	# 	testcase_expect_dict = {
+	# 		((3,1), (3,7)) :
+	# 			[((2,1), (3,7)), ((3,1), (2,7)),	# up
+	# 			 ((4,1), (3,7)), ((3,1), (4,7)),	# down
+	# 			 ((3,0), (3,7)), ((3,1), (3,6)),	# left
+	# 			 ((3,2), (3,7)), ((3,1), (3,8)),	# right
+	# 			]
+	# 	}
 
-		for testcase, expect in testcase_expect_dict.items():
-			self.assertEqual(self.bloxorz._do_all_single_moves(testcase), expect)
+	# 	for testcase, expect in testcase_expect_dict.items():
+	# 		self.assertEqual(self.bloxorz._do_all_single_moves(testcase), expect)
 
 	def test_move_pair_up(self):
 
@@ -286,32 +280,32 @@ class TestBloxorz(unittest.TestCase):
 		for testcase, expect in testcase_expect_lying_col_dict.items():
 			self.assertEqual(self.bloxorz._move_pair_right(testcase), expect)
 
-	def test_do_all_pair_moves(self):
-		# standing
-		testcase_expect_standing_dict = {
-			((3,2), (3,2)) :
-				[((1,2), (2,2)),	# up
-				 ((5,2), (4,2)),	# down
-				 ((3,0), (3,1)),	# left
-				 ((3,4), (3,3)),	# right
-				]
-		}
+	# def test_do_all_pair_moves(self):
+	# 	# standing
+	# 	testcase_expect_standing_dict = {
+	# 		((3,2), (3,2)) :
+	# 			[((1,2), (2,2)),	# up
+	# 			 ((5,2), (4,2)),	# down
+	# 			 ((3,0), (3,1)),	# left
+	# 			 ((3,4), (3,3)),	# right
+	# 			]
+	# 	}
 
-		for testcase, expect in testcase_expect_standing_dict.items():
-			self.assertEqual(self.bloxorz._do_all_pair_moves(testcase), expect)
+	# 	for testcase, expect in testcase_expect_standing_dict.items():
+	# 		self.assertEqual(self.bloxorz._do_all_pair_moves(testcase), expect)
 
-	def test_do_all_valid_moves(self):
-		# standing
-		testcase_expect_standing_dict = {
-			((3,2), (3,2)) :
-				[((1,2), (2,2)),	# up
-				 ((4,2), (5,2)),	# down
-				 ((3,0), (3,1)),	# left
-				]
-		}
+	# def test_do_all_valid_moves(self):
+	# 	# standing
+	# 	testcase_expect_standing_dict = {
+	# 		((3,2), (3,2)) :
+	# 			[((1,2), (2,2)),	# up
+	# 			 ((4,2), (5,2)),	# down
+	# 			 ((3,0), (3,1)),	# left
+	# 			]
+	# 	}
 
-		for testcase, expect in testcase_expect_standing_dict.items():
-			self.assertEqual(self.bloxorz._do_all_valid_moves(testcase), expect)
+	# 	for testcase, expect in testcase_expect_standing_dict.items():
+	# 		self.assertEqual(self.bloxorz._do_all_valid_moves(testcase), expect)
 
 	# TEST CONSEQUENCE
 	def test_is_on_soft_switch(self):
@@ -352,36 +346,39 @@ class TestBloxorz(unittest.TestCase):
 
 	def test_change_list_bridge_status(self):
 		soft_switch_position = (2,2)
-		bridge_status_list = (Square.EMPT,Square.EMPT,Square.EMPT,Square.EMPT)
-		expect_result = (Square.H_TI,Square.H_TI,Square.EMPT,Square.EMPT)
+		bridge_status_list = (0,0,0,0)
+		expect_result = (1,1,0,0)
 		real_result = self.bloxorz._change_list_bridge_status(soft_switch_position, bridge_status_list)
 		self.assertEqual(real_result, expect_result)
 
-	def test_get_move_consequence(self):
+	def test_get_consequence_for_pair_move(self):
 		pass
 
-	# TEST HEURISTIC
+	# def test_get_move_consequence(self):
+	# 	pass
 
-	def test_get_distance(self):
-		testcase_expect_dict = {
-			((0,0), (0,4)) : 4,
-			((0,0), (4,0)) : 4,
-			((0,0), (4,4)) : 8,
-		}
+	# # TEST HEURISTIC
 
-		for pair_position, distance in testcase_expect_dict.items():
-			self.assertEqual(self.bloxorz._get_distance(pair_position[0], pair_position[1]), distance)
+	# def test_get_distance(self):
+	# 	testcase_expect_dict = {
+	# 		((0,0), (0,4)) : 4,
+	# 		((0,0), (4,0)) : 4,
+	# 		((0,0), (4,4)) : 8,
+	# 	}
 
-	def test_get_distance_to_goal(self):
-		testcase_expect_dict = {
-			((1,13), (1,13)) : 0,
-			((1,0), (1,1)) : 25,
-			((2,13), (3,13)) : 3,
-			((0,0), (0,0)) : 28
-		}
+	# 	for pair_position, distance in testcase_expect_dict.items():
+	# 		self.assertEqual(self.bloxorz._get_distance(pair_position[0], pair_position[1]), distance)
 
-		for pair_position, distance in testcase_expect_dict.items():
-			self.assertEqual(self.bloxorz._get_distance_to_goal(pair_position), distance)
+	# def test_get_distance_to_goal(self):
+	# 	testcase_expect_dict = {
+	# 		((1,13), (1,13)) : 0,
+	# 		((1,0), (1,1)) : 25,
+	# 		((2,13), (3,13)) : 3,
+	# 		((0,0), (0,0)) : 28
+	# 	}
+
+	# 	for pair_position, distance in testcase_expect_dict.items():
+	# 		self.assertEqual(self.bloxorz._get_distance_to_goal(pair_position), distance)
 
 
 
