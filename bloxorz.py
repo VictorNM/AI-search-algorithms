@@ -16,12 +16,19 @@ class Square(Enum):
 		return self.value
 
 class Map(object):
-	def __init__(self):
-		self._map_matrix = None
-		self._bridge_positions = None
-		self._switch_bridge_dict = None
-		self._split_port_dest_dict = None
-		self._goal_position = None
+	def __init__(self, stage_map = None):
+		if stage_map is not None:
+			self._map_matrix = stage_map._map_matrix
+			self._bridge_positions = stage_map._bridge_positions
+			self._switch_bridge_dict = stage_map._switch_bridge_dict
+			self._split_port_dest_dict = stage_map._split_port_dest_dict
+			self._goal_position = stage_map._goal_position
+		else:
+			self._map_matrix = None
+			self._bridge_positions = None
+			self._switch_bridge_dict = None
+			self._split_port_dest_dict = None
+			self._goal_position = None
 	
 	def set_map(self, map_matrix, bridge_positions, switch_bridge_dict, split_port_dest_dict):
 		self._map_matrix = map_matrix
@@ -79,18 +86,9 @@ class Bloxorz(Problem):
 		if initial_state is not None:
 			self.set_initial_state(initial_state)
 
-	def generate_next_states(self, current_state):
+	def get_all_actions_results(self, current_state):
 		self._parse_state_to_map(current_state)
-		pair_block_position = current_state[0]
-		bridge_status_list = current_state[1]
-
-		next_states = []
-		new_pair_block_position_list = self._do_all_valid_moves(pair_block_position)
-		for pair_block_position in new_pair_block_position_list:
-			state = self._get_move_consequence(pair_block_position, bridge_status_list)
-			next_states.append(state)
-
-		return next_states
+		return self._do_all_valid_moves(current_state)
 
 	def is_goal_state(self, state):
 		self._parse_state_to_map(state)
@@ -114,31 +112,32 @@ class Bloxorz(Problem):
 	def set_map(self, stage_map):
 		self._stage_map = stage_map
 
-	def _do_all_valid_moves(self, pair_block_position):
-		new_pair_block_position_list = None
+	def _do_all_valid_moves(self, current_state):
+		action_new_state_list = None
+		pair_block_position = current_state[0]
+		bridge_status_list = current_state[1]
+		# move
 		if self._is_splitting(pair_block_position):
-			new_pair_block_position_list = [pair_block_position
-							 for pair_block_position in self._do_all_single_moves(pair_block_position)
-							 if self._is_valid_block_position(pair_block_position)]
+			action_new_state_list = self._do_all_valid_single_moves(current_state)
 		else:
-			new_pair_block_position_list = [pair_block_position
-							 for pair_block_position in self._do_all_pair_moves(pair_block_position)
-							 if self._is_valid_block_position(pair_block_position)]
-
-		new_pair_block_position_list = self._adjust_block_position_order(new_pair_block_position_list)
-		return new_pair_block_position_list
-
-	# make sure (3,1) (3,2) is always (3,1) (3,2)
-	# not (3,2) (3,1)
-	def _adjust_block_position_order(self, pair_block_position_list):
+			action_new_state_list = self._do_all_valid_pair_moves(current_state)
+		
+		# adjust: position_1 always <= position_2
 		adjusted_list = []
-		for pair_block_position in pair_block_position_list:
-			(single_block_position_1, single_block_position_2) = pair_block_position
-			if single_block_position_1 > single_block_position_2:
-				adjusted_list.append((single_block_position_2, single_block_position_1))
-			else:
-				adjusted_list.append(pair_block_position)
-		return adjusted_list
+		for (action, state) in action_new_state_list:
+			position = state[0]
+			position = self._adjust_block_position_order(position)
+			state = (position, state[1])
+			adjusted_list.append((action, state))
+
+		action_new_state_list = adjusted_list
+		return action_new_state_list
+
+	def _adjust_block_position_order(self, pair_block_position):
+		(single_block_position_1, single_block_position_2) = pair_block_position
+		if single_block_position_1 > single_block_position_2:
+			return (single_block_position_2, single_block_position_1)
+		return pair_block_position
 
 	def _is_standing(self, pair_block_position):
 		return pair_block_position[0] == pair_block_position[1]
@@ -162,61 +161,104 @@ class Bloxorz(Problem):
 
 		return abs(row_1 - row_2) + abs(col_1 - col_2) > 1
 
-	def _do_all_single_moves(self, pair_block_position):
-		new_pair_block_position_list = []
+	def _do_all_valid_single_moves(self, current_state):
+		pair_block_position = current_state[0]
+		bridge_status_list = current_state[1]
+		action_new_state_list = []
 		(single_block_position_1, single_block_position_2) = pair_block_position
 
 		# move up
 		new_pair_position_up_1 = (self._move_single_up(single_block_position_1), single_block_position_2)
 		new_pair_position_up_2 = (single_block_position_1, self._move_single_up(single_block_position_2))
 
-		new_pair_block_position_list.append(new_pair_position_up_1)
-		new_pair_block_position_list.append(new_pair_position_up_2)
+		new_state_up_1 = self._get_consequence_for_single_move(new_pair_position_up_1, bridge_status_list, 1)
+		new_state_up_2 = self._get_consequence_for_single_move(new_pair_position_up_2, bridge_status_list, 2)
+
+		if self._is_valid_state(new_state_up_1):
+			action_up_1 = "{position}: UP".format(position=single_block_position_1)
+			action_new_state_list.append((action_up_1, new_state_up_1))
+
+		if self._is_valid_state(new_state_up_2):
+			action_up_2 = "{position}: UP".format(position=single_block_position_2)
+			action_new_state_list.append((action_up_2, new_state_up_2))
 
 		# move down
 		new_pair_position_down_1 = (self._move_single_down(single_block_position_1), single_block_position_2)
 		new_pair_position_down_2 = (single_block_position_1, self._move_single_down(single_block_position_2))
 
-		new_pair_block_position_list.append(new_pair_position_down_1)
-		new_pair_block_position_list.append(new_pair_position_down_2)
+		new_state_down_1 = self._get_consequence_for_single_move(new_pair_position_down_1, bridge_status_list, 1)
+		new_state_down_2 = self._get_consequence_for_single_move(new_pair_position_down_2, bridge_status_list, 2)
+
+		if self._is_valid_state(new_state_down_1):
+			action_down_1 = "{position}: DOWN".format(position=single_block_position_1)
+			action_new_state_list.append((action_down_1, new_state_down_1))
+
+		if self._is_valid_state(new_state_down_2):
+			action_down_2 = "{position}: DOWN".format(position=single_block_position_2)
+			action_new_state_list.append((action_down_2, new_state_down_2))
 
 		# move left
 		new_pair_position_left_1 = (self._move_single_left(single_block_position_1), single_block_position_2)
 		new_pair_position_left_2 = (single_block_position_1, self._move_single_left(single_block_position_2))
 
-		new_pair_block_position_list.append(new_pair_position_left_1)
-		new_pair_block_position_list.append(new_pair_position_left_2)
+		new_state_left_1 = self._get_consequence_for_single_move(new_pair_position_left_1, bridge_status_list, 1)
+		new_state_left_2 = self._get_consequence_for_single_move(new_pair_position_left_2, bridge_status_list, 2)
+
+		if self._is_valid_state(new_state_left_1):
+			action_left_1 = "{position}: LEFT".format(position=single_block_position_1)
+			action_new_state_list.append((action_left_1, new_state_left_1))
+
+		if self._is_valid_state(new_state_left_2):
+			action_left_2 = "{position}: LEFT".format(position=single_block_position_2)
+			action_new_state_list.append((action_left_2, new_state_left_2))
 
 		# move right
 		new_pair_position_right_1 = (self._move_single_right(single_block_position_1), single_block_position_2)
 		new_pair_position_right_2 = (single_block_position_1, self._move_single_right(single_block_position_2))
 
-		new_pair_block_position_list.append(new_pair_position_right_1)
-		new_pair_block_position_list.append(new_pair_position_right_2)
+		new_state_right_1 = self._get_consequence_for_single_move(new_pair_position_right_1, bridge_status_list, 1)
+		new_state_right_2 = self._get_consequence_for_single_move(new_pair_position_right_2, bridge_status_list, 2)
 
-		return new_pair_block_position_list
+		if self._is_valid_state(new_state_right_1):
+			action_right_1 = "{position}: RIGHT".format(position=single_block_position_1)
+			action_new_state_list.append((action_right_1, new_state_right_1))
 
-	def _do_all_pair_moves(self, pair_block_position):
-		new_pair_block_position_list = []
+		if self._is_valid_state(new_state_right_2):
+			action_right_2 = "{position}: RIGHT".format(position=single_block_position_2)
+			action_new_state_list.append((action_right_2, new_state_right_2))
 
-		# move up and check validity
+		return action_new_state_list
+
+	def _do_all_valid_pair_moves(self, current_state):
+		pair_block_position = current_state[0]
+		bridge_status_list = current_state[1]
+		action_new_state_list = []
+
+		# move up
 		new_pair_position_up = self._move_pair_up(pair_block_position)
-		new_pair_block_position_list.append(new_pair_position_up)
+		new_state_up = self._get_consequence_for_pair_move(new_pair_position_up, bridge_status_list)
+		if self._is_valid_state(new_state_up):
+			action_new_state_list.append(("UP", new_state_up))
 
 		# move down
 		new_pair_position_down = self._move_pair_down(pair_block_position)
-		new_pair_block_position_list.append(new_pair_position_down)
+		new_state_down = self._get_consequence_for_pair_move(new_pair_position_down, bridge_status_list)
+		if self._is_valid_state(new_state_down):
+			action_new_state_list.append(("DOWN", new_state_down))
 
 		# move left
 		new_pair_position_left = self._move_pair_left(pair_block_position)
-		new_pair_block_position_list.append(new_pair_position_left)
+		new_state_left = self._get_consequence_for_pair_move(new_pair_position_left, bridge_status_list)
+		if self._is_valid_state(new_state_left):
+			action_new_state_list.append(("LEFT", new_state_left))
 
 		# move right
 		new_pair_position_right = self._move_pair_right(pair_block_position)
-		new_pair_block_position_list.append(new_pair_position_right)
+		new_state_right = self._get_consequence_for_pair_move(new_pair_position_right, bridge_status_list)
+		if self._is_valid_state(new_state_right):
+			action_new_state_list.append(("RIGHT", new_state_right))
 
-
-		return new_pair_block_position_list
+		return action_new_state_list
 
 	def _move_single_up(self, single_block_position):
 		(row, col) = single_block_position
@@ -310,26 +352,38 @@ class Bloxorz(Problem):
 		new_pair_block_position = ((row_1, col_1),(row_2, col_2))
 		return new_pair_block_position
 
-	def _is_valid_block_position(self, pair_block_position):
+	def _is_valid_state(self, state):
+		pair_block_position = state[0]
+		bridge_status_list = state[1]
+
+		stage_map = Map(self._stage_map)
+		stage_map.parse_bridge_status(bridge_status_list)
+		return self._is_valid_block_position(pair_block_position, stage_map)
+
+	def _is_valid_block_position(self, pair_block_position, stage_map):
 		(single_block_position_1, single_block_position_2) = pair_block_position
 		# check with map's dimension
-		if (not self._stage_map.is_in_map(single_block_position_1) or
-			not self._stage_map.is_in_map(single_block_position_2)):
+		if (not stage_map.is_in_map(single_block_position_1) or
+			not stage_map.is_in_map(single_block_position_2)):
 			return False
+
 		# check empty
-		if (self._stage_map.get_map_value(single_block_position_1) == Square.EMPT.value or
-			self._stage_map.get_map_value(single_block_position_2) == Square.EMPT.value):
+		if (stage_map.get_map_value(single_block_position_1) == Square.EMPT.value or
+			stage_map.get_map_value(single_block_position_2) == Square.EMPT.value):
 			return False
 
 		# check solf tile
 		if (self._is_standing(pair_block_position) and
-			self._stage_map.get_map_value(single_block_position_1) == Square.S_TI.value):
+			stage_map.get_map_value(single_block_position_1) == Square.S_TI.value):
 			return False
 
 		return True
 
-	def _get_move_consequence(self, pair_block_position, bridge_status_list):
-		# check on soft switch: check all 2 single positions
+	def _get_consequence_for_pair_move(self, pair_block_position, bridge_status_list):
+		if (not self._is_valid_state((pair_block_position, bridge_status_list))):
+			return (pair_block_position, bridge_status_list)
+
+		# on soft switch: check all 2 single positions
 		if self._is_on_soft_switch(pair_block_position[0]):
 			switch_position = pair_block_position[0]
 			bridge_status_list = self._change_list_bridge_status(switch_position, bridge_status_list)
@@ -337,16 +391,28 @@ class Bloxorz(Problem):
 			self._is_on_soft_switch(pair_block_position[1])):
 			switch_position = pair_block_position[1]
 			bridge_status_list = self._change_list_bridge_status(switch_position, bridge_status_list)
-
-		# check on hard switch
+		
+		# on hard switch
 		if self._is_on_hard_switch(pair_block_position):
 			switch_position = pair_block_position[0]
 			bridge_status_list = self._change_list_bridge_status(switch_position, bridge_status_list)
 
-		# check on split port
+		# on split port
 		if self._is_on_split_port(pair_block_position):
 			split_port_position = pair_block_position[0]
 			pair_block_position = self._move_to_split_dest(split_port_position)
+
+		return (pair_block_position, bridge_status_list)
+
+	def _get_consequence_for_single_move(self, pair_block_position, bridge_status_list, moved_block):
+		if (not self._is_valid_state((pair_block_position, bridge_status_list))):
+			return (pair_block_position, bridge_status_list)
+
+		block_index = moved_block - 1
+		# only check for on soft switch
+		if self._is_on_soft_switch(pair_block_position[block_index]):
+			switch_position = pair_block_position[block_index]
+			bridge_status_list = self._change_list_bridge_status(switch_position, bridge_status_list)
 
 		return (pair_block_position, bridge_status_list)
 
@@ -379,11 +445,10 @@ class Bloxorz(Problem):
 					bridge_status_list[bridge_index] = Square.H_TI.value
 				else:
 					bridge_status_list[bridge_index] = Square.EMPT.value
-		
 		return tuple(bridge_status_list)
 
-	def _change_bridge_status(self, bridge_index, action_code):
-		pass
+	# def _change_bridge_status(self, bridge_index, action_code):
+	# 	pass
 
 	def _move_to_split_dest(self, split_port_position):
 		split_dest_list = self._stage_map.get_list_split_dest_of_port(split_port_position)
@@ -409,43 +474,3 @@ class Bloxorz(Problem):
 
 	def draw_map(self):
 		print(self._stage_map)
-
-	def print_movement(self, state_path):
-		for i in range(1, len(state_path)):			
-			pair_position_prev = state_path[i-1][0]
-			pair_position_now = state_path[i][0]
-
-			if (not self._is_splitting(pair_position_prev) and
-				not self._is_splitting(pair_position_now)):
-				(row_prev, col_prev) = pair_position_prev[0]
-				(row_now, col_now) = pair_position_now[0]
-
-				if row_now < row_prev: print('[UP]', end=' ')
-				elif row_now > row_prev: print('[DOWN]', end=' ')
-				elif col_now < col_prev: print('[LEFT]', end=' ')
-				elif col_now > col_prev: print('[RIGHT]', end=' ')
-
-			elif (not self._is_splitting(pair_position_prev) and
-					self._is_splitting(pair_position_now)):
-				print('[move to split port]', end=' ')
-
-			else:
-				(row_prev_1, col_prev_1) = pair_position_prev[0]
-				(row_prev_2, col_prev_2) = pair_position_prev[1]
-				(row_now_1, col_now_1) = pair_position_now[0]
-				(row_now_2, col_now_2) = pair_position_now[1]
-
-				if pair_position_prev[0] != pair_position_now[0]:
-					print('[', pair_position_prev[0], end=': ')
-					if row_now_1 < row_prev_1: print('UP]', end=' ')
-					elif row_now_1 > row_prev_1: print('DOWN]', end=' ')
-					elif col_now_1 < col_prev_1: print('LEFT]', end=' ')
-					elif col_now_1 > col_prev_1: print('RIGHT]', end=' ')
-				else:
-					print('[', pair_position_prev[1], end=': ')
-					if row_now_2 < row_prev_2: print('UP]', end=' ')
-					elif row_now_2 > row_prev_2: print('DOWN]', end=' ')
-					elif col_now_2 < col_prev_2: print('LEFT]', end=' ')
-					elif col_now_2 > col_prev_2: print('RIGHT]', end=' ')
-
-		print()

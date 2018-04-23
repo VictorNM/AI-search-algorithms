@@ -1,4 +1,5 @@
 from bloxorz import *
+import time
 
 ####################################
 # CREATE STAGES
@@ -14,6 +15,9 @@ class BloxorzCreator(object):
 			9 	: self.create_stage_9,
 			10	: self.create_stage_10,
 			11	: self.create_stage_11,
+			12	: self.create_stage_12,
+			14	: self.create_stage_14,
+			15	: self.create_stage_15,
 		}[stage_number]()
 
 	def create_stage_2(self):
@@ -35,11 +39,14 @@ class BloxorzCreator(object):
 
 		stage_2_split_port_dest_dict = {};
 
+		start_position = ( (4,1), (4,1) )
+		start_bridge_status = (0,0,0,0)
+
 		stage_2_map = Map()
 		stage_2_map.set_map(stage_2_map_matrix, stage_2_bridge_positions, stage_2_switch_bridge_dict, stage_2_split_port_dest_dict)
 
 		stage_2_problem = Bloxorz(stage_2_map)
-		stage_2_initial_state = ( ((4,1), (4,1)), (0,0,0,0) )
+		stage_2_initial_state = ( start_position, start_bridge_status )
 		stage_2_problem.set_initial_state(stage_2_initial_state)
 
 		return stage_2_problem
@@ -58,11 +65,14 @@ class BloxorzCreator(object):
 		switch_bridge_dict = {}
 		split_port_dest_dict = {}
 
+		start_position = ( (3,1),(3,1) )
+		start_bridge_status = ()
+
 		stage_3_map = Map()
 		stage_3_map.set_map(map_matrix, bridge_positions, switch_bridge_dict, split_port_dest_dict)
 
 		stage_3_problem = Bloxorz(stage_3_map)
-		initial_state = (((3,1),(3,1)),())
+		initial_state = (start_position, start_bridge_status)
 		stage_3_problem.set_initial_state(initial_state)
 
 		return stage_3_problem
@@ -197,7 +207,7 @@ class BloxorzCreator(object):
 			[0,1,0,0,0,1,1,1,1,1,1,0],
 			[0,1,0,0,0,1,1,0,0,1,1,0],
 			[1,1,1,1,1,1,1,0,0,1,1,1],
-			[0,0,0,0,0,1,2,0,0,0,0,1],
+			[0,0,0,0,0,1,4,0,0,0,0,1],
 			[0,0,0,0,0,1,1,1,1,0,0,1],
 			[0,0,0,0,0,1,1,1,1,1,1,1],
 			[0,0,0,0,0,0,0,0,1,1,1,0],
@@ -220,6 +230,165 @@ class BloxorzCreator(object):
 
 		return stage_problem
 
+	def create_stage_12(self):
+		map_matrix = [
+			[0,0,0,0,0,0,0,0,0,0,0,0,3],
+			[0,0,0,0,0,1,1,1,0,0,1,1,1],
+			[0,0,0,0,0,1,3,1,1,1,1,1,0],
+			[0,0,0,1,1,1,1,1,0,0,1,1,0],
+			[0,0,0,1,6,1,0,0,0,0,1,1,0],
+			[0,1,1,1,1,1,0,0,0,1,1,1,1],
+			[1,1,1,1,0,0,0,0,0,1,1,1,1],
+			[1,1,1,1,0,0,1,1,1,1,1,0,0],
+			[0,0,0,0,0,1,1,1,0,0,0,0,0],
+			[0,0,0,0,0,1,1,1,0,0,0,0,0],
+		]
+
+		bridge_positions = [ (2,12), (4,6) ]
+		switch_bridge_dict = {
+			(2,6) 	: [ (0,0) ],
+			(0,12)	: [ (1,0) ]
+		}
+		split_port_dest_dict = {}
+		start_position = ( (6,2), (6,2) )
+		start_bridge_status = (0,0)
+
+		stage_map = Map()
+		stage_map.set_map(map_matrix, bridge_positions, switch_bridge_dict, split_port_dest_dict)
+
+		stage_problem = Bloxorz(stage_map)
+		initial_state = (start_position, start_bridge_status)
+		stage_problem.set_initial_state(initial_state)
+
+		return stage_problem
+
+	def create_stage_14(self):
+		map_matrix = [
+			[0,0,0,0,0,0,0,0,1,1,1,0,0,0],
+			[0,0,0,1,1,1,0,0,1,1,1,0,0,0],
+			[1,0,0,1,1,1,1,1,1,1,1,1,1,1],
+			[1,0,0,1,1,1,0,0,0,0,0,0,3,1],
+			[1,0,0,0,0,0,0,0,0,0,0,0,1,1],
+			[1,0,0,0,0,0,0,0,0,0,0,0,1,1],
+			[1,0,0,0,0,0,0,0,1,1,1,1,1,1],
+			[1,1,1,1,1,0,0,0,1,1,1,0,0,0],
+			[0,1,1,6,1,0,0,0,1,1,1,0,0,0],
+			[0,0,1,1,1,0,0,0,1,1,1,1,1,3],
+		]
+
+		bridge_positions = [ (2,1), (2,2), (3,1), (3,2) ]
+		switch_bridge_dict = {
+			(3,12) 	: [ (0,0), (1,0) ],
+			(9,13)	: [ (2,0), (3,0) ]
+		}
+		split_port_dest_dict = {}
+		start_position = ( (2,4), (2,4) )
+		start_bridge_status = (0,0,0,0)
+
+		stage_map = Map()
+		stage_map.set_map(map_matrix, bridge_positions, switch_bridge_dict, split_port_dest_dict)
+
+		stage_problem = Bloxorz(stage_map)
+		initial_state = (start_position, start_bridge_status)
+		stage_problem.set_initial_state(initial_state)
+
+		return stage_problem
+
+	def create_stage_15(self):
+		map_matrix = [
+			[0,0,0,0,0,0,0,1,1,1,0,0,1,1,1],
+			[0,0,0,0,1,1,1,1,1,1,0,0,3,1,1],
+			[1,1,0,0,1,0,0,1,1,1,0,0,1,1,1],
+			[1,1,1,1,1,0,0,0,4,0,0,0,0,0,0],
+			[1,1,0,0,0,0,0,0,0,0,0,0,0,0,0],
+			[0,1,0,0,0,0,0,5,0,0,0,0,0,0,0],
+			[0,1,0,0,0,0,0,1,0,0,0,0,0,0,0],
+			[1,1,1,0,0,0,1,1,1,0,0,4,1,1,0],
+			[1,1,1,1,1,1,1,1,1,1,1,1,6,1,0],
+			[1,1,1,0,0,0,1,1,1,0,0,4,1,1,0],
+		]
+
+		bridge_positions = [ (1,5), (1,6), (1,10), (1,11), (8,9), (8,10), (2,2), (2,3) ]
+		switch_bridge_dict = {
+			(3,8) 	: [ (0,0), (1,0), (2,0), (3,0) ],
+			(1,12)	: [ (0,0), (1,0), (6,0), (7,0) ],
+			(7,11)	: [ (4,-1), (5,-1) ],
+			(9,11)	: [ (4,-1), (5,-1) ],
+		}
+		split_port_dest_dict = {
+			(5,7)	: [ (1,13), (8,1) ],
+		}
+		start_position = ( (8,1), (8,1) )
+		start_bridge_status = (1,1,0,0,1,1,0,0)
+
+		stage_map = Map()
+		stage_map.set_map(map_matrix, bridge_positions, switch_bridge_dict, split_port_dest_dict)
+
+		stage_problem = Bloxorz(stage_map)
+		initial_state = (start_position, start_bridge_status)
+		stage_problem.set_initial_state(initial_state)
+
+		return stage_problem
+
+def print_list(list_item):
+	for i in range(len(list_item)):
+		item = list_item[i]
+		print(str(i+1).rjust(3), end='. ')
+		if i % 5 == 4: print(item)
+		else: print(item.ljust(20), end='')
+
+def solve_by_DFS(stage, max_node = 0):
+	print('\n####################################')
+	print('Depth First Search:')
+	print('####################################\n')
+
+	dfs_solver = DepthFirstSearchSolver(stage)
+	dfs_solver.set_max_visited_node(max_node)
+	start_time = time.time()
+	goal_node = dfs_solver.solve()
+	finish_time = time.time()
+	actions_list = dfs_solver.get_actions_to_goal(goal_node)
+	
+	print(actions_list)
+	print("Visited: ", dfs_solver.num_visited_nodes, "node(s)")
+	print("Running time:", finish_time - start_time)
+	print("Num steps: ", len(actions_list))
+
+def solve_by_BrFS(stage, max_node = 0):
+	print('\n####################################')
+	print('Breadth First Search:')
+	print('####################################\n')
+
+	brfs_solver = BreadthFirstSearchSolver(stage)
+	brfs_solver.set_max_visited_node(max_node)
+	start_time = time.time()
+	goal_node = brfs_solver.solve()
+	finish_time = time.time()
+	actions_list = brfs_solver.get_actions_to_goal(goal_node)
+
+	print_list(actions_list)
+	print("Visited: ", brfs_solver.num_visited_nodes, "node(s)")
+	print("Running time:", finish_time - start_time)
+	print("Num steps: ", len(actions_list))
+
+def solve_by_BFS(stage, max_node = 0):
+	print('\n####################################')
+	print('Best First Search:')
+	print('####################################\n')
+	bfs_solver = BestFirstSearchSolver(stage)
+	bfs_solver.set_max_visited_node(max_node)
+	start_time = time.time()
+	goal_node = bfs_solver.solve()
+	finish_time = time.time()
+	actions_list = bfs_solver.get_actions_to_goal(goal_node)
+
+	# print_list(actions_list)
+	print_list(actions_list)
+	print()
+	print("Visited: ", bfs_solver.num_visited_nodes, "node(s)")
+	print("Running time:", finish_time - start_time)
+	print("Num steps: ", len(actions_list))
+
 ####################################
 # MAIN
 ####################################
@@ -228,70 +397,13 @@ def main():
 	num_stage = int(input("Enter stage: "))
 	max_node = 0
 
-
 	bloxorz_creator = BloxorzCreator()
 	stage = bloxorz_creator.create_stage(num_stage)
 	stage.draw_map()
-	# stage_2 = bloxorz_creator.create_stage(2)
-	# stage_3 = bloxorz_creator.create_stage(3)
-	# stage_5 = bloxorz_creator.create_stage(5)
-
-	print('\n####################################')
-	print('Depth First Search:')
-	print('####################################\n')
-	dfs_solver = DepthFirstSearchSolver(stage)
-	dfs_solver.set_max_visited_node(max_node)
-	goal_node = dfs_solver.solve()
-	solution_path = dfs_solver.trace_back(goal_node)
-	# # stage.print_movement(solution_path)
-	print("Visited: ", dfs_solver.num_visited_nodes, "node(s)")
-	print("Num steps: ", len(solution_path) - 1)
-
-	# print('\n####################################')
-	# print('Breadth First Search:')
-	# print('####################################\n')
-	# brfs_solver = BreadthFirstSearchSolver(stage)
-	# brfs_solver.set_max_visited_node(max_node)
-	# goal_node = brfs_solver.solve()
-	# solution_path = brfs_solver.trace_back(goal_node)
-	# # # print(solution_path)
-	# # stage.print_movement(solution_path)
-	# print("Visited: ", brfs_solver.num_visited_nodes, "node(s)")
-	# print("Num steps: ", len(solution_path) - 1)
-
-	print('\n####################################')
-	print('Best First Search:')
-	print('####################################\n')
-	bfs_solver = BestFirstSearchSolver(stage)
-	bfs_solver.set_max_visited_node(max_node)
-	goal_node = bfs_solver.solve()
-	solution_path = bfs_solver.trace_back(goal_node)
-	# print(solution_path)
-	# stage.print_movement(solution_path)
-	for step in solution_path:
-		print(step[0])
-	print("Visited: ", bfs_solver.num_visited_nodes, "node(s)")
-	if solution_path is not None:
-		print("Num steps: ", len(solution_path) - 1)
-	else:
-		print('Cannot solve')
-
-	# print('\n####################################')
-	# print('Simulated Annealing:')
-	# print('####################################\n')
-	# sa_solver = SimulatedAnnealing(stage)
-	# sa_solver.set_max_visited_node(max_node)
-	# goal_node = sa_solver.solve()
-	# solution_path = sa_solver.trace_back(goal_node)
-	# # print(solution_path)
-	# # stage.print_movement(solution_path)
-	# # for step in solution_path:
-	# # 	print(step[0])
-	# print("Visited: ", sa_solver.num_visited_nodes, "node(s)")
-	# if solution_path is not None:
-	# 	print("Num steps: ", len(solution_path) - 1)
-	# else:
-	# 	print('Cannot solve')
+	
+	# solve_by_DFS(stage, max_node)
+	# solve_by_BrFS(stage, max_node)
+	solve_by_BFS(stage, max_node)
 
 if __name__ == '__main__':
 	main()
