@@ -35,11 +35,13 @@ class Map(object):
 		self._bridge_positions = bridge_positions
 		self._switch_bridge_dict = switch_bridge_dict
 		self._split_port_dest_dict = split_port_dest_dict
-		# find goal position
+		self._goal_position = self.set_goal()
+
+	def set_goal(self):
 		for row in range(len(self._map_matrix)):
 			for col in range(len(self._map_matrix[row])):
 				if self._map_matrix[row][col] == Square.GOAL.value:
-					self._goal_position = (row, col)
+					return (row, col)
 
 	def parse_bridge_status(self, list_bridge_status):
 		for index, position in enumerate(self._bridge_positions):
@@ -421,14 +423,16 @@ class Bloxorz(Problem):
 
 	def _is_on_hard_switch(self, pair_block_position):
 		(position_1, position_2) = pair_block_position
-		return (self._stage_map.get_map_value(position_1) == Square.H_SW.value and
-				self._stage_map.get_map_value(position_2) == Square.H_SW.value)
+		if position_1 != position_2:
+			return False
+		return self._stage_map.get_map_value(position_1) == Square.H_SW.value
 
 	def _is_on_split_port(self, pair_block_position):
 		# uncomment after write test
 		(position_1, position_2) = pair_block_position
-		return (self._stage_map.get_map_value(position_1) == Square.SPLI.value and
-				self._stage_map.get_map_value(position_2) == Square.SPLI.value)
+		if position_1 != position_2:
+			return False
+		return self._stage_map.get_map_value(position_1) == Square.SPLI.value
 
 	def _change_list_bridge_status(self, switch_position, bridge_status_list):
 		bridge_action_list = self._stage_map.get_list_bridge_action_of_switch(switch_position)
@@ -459,6 +463,7 @@ class Bloxorz(Problem):
 		goal_position = self._stage_map.get_goal_position()
 		distance_1 = self._get_distance(single_block_position_1, goal_position)
 		distance_2 = self._get_distance(single_block_position_2, goal_position)
+
 		return distance_1 + distance_2
 
 	def _get_distance(self, position_1, position_2):
