@@ -70,6 +70,12 @@ class Map(object):
 	def get_goal_position(self):
 		return self._goal_position
 
+	def get_switch_position_list(self):
+		return self._switch_bridge_dict.keys()
+
+	def get_port_position_list(self):
+		return self._split_port_dest_dict.keys()
+
 	def __str__(self):
 		value_matrix = [[int(self._map_matrix[row][col])
 						for col in range(len(self._map_matrix[row]))]
@@ -90,6 +96,7 @@ class Bloxorz(Problem):
 
 	def get_all_actions_results(self, current_state):
 		self._parse_state_to_map(current_state)
+		# print(current_state[0])
 		return self._do_all_valid_moves(current_state)
 
 	def is_goal_state(self, state):
@@ -103,9 +110,19 @@ class Bloxorz(Problem):
 		pair_block_position = state[0]
 		bridge_status_list = state[1]
 		total_open = sum(1 for bridge_status in bridge_status_list if bridge_status == Square.H_TI.value)
-		# return (total_open, self._get_distance_to_goal(pair_block_position))
-		# return (self._get_distance_to_goal(pair_block_position), total_open)
-		return self._get_distance_to_goal(pair_block_position)
+		can_move_to_goal_rank = 0
+		if not self._can_move_to_goal(state):
+			can_move_to_goal_rank = 1
+
+		if self._is_splitting(pair_block_position):
+			min_distance = self._get_distance_to_nearest_switch(pair_block_position)
+		else:
+			min_distance = self._get_distance_to_nearest_split_port(pair_block_position)
+			if min_distance > self._get_distance_to_nearest_switch(pair_block_position):
+				min_distance = self._get_distance_to_nearest_switch(pair_block_position)
+
+		return (can_move_to_goal_rank, total_open, min_distance, self._get_distance_to_goal(pair_block_position))
+		# return self._get_distance_to_goal(pair_block_position)
 
 	def set_initial_state(self, initial_state):
 		self.initial_state = initial_state
@@ -466,12 +483,74 @@ class Bloxorz(Problem):
 
 		return distance_1 + distance_2
 
+	def _get_distance_to_nearest_split_port(self, pair_block_position):
+		(single_block_position_1, single_block_position_2) = pair_block_position
+		split_port_position_list = self._stage_map.get_port_position_list()
+		min_distance = 1000
+		for item_position in split_port_position_list:
+			distance = (self._get_distance(single_block_position_1, item_position)
+					+ self._get_distance(single_block_position_2, item_position))
+			if distance < min_distance: min_distance = distance
+		return min_distance
+
+	def _get_distance_to_nearest_switch(self, pair_block_position):
+		(single_block_position_1, single_block_position_2) = pair_block_position
+		switch_position_list = self._stage_map.get_switch_position_list()
+		min_distance = 1000
+		for position in switch_position_list:
+			if self._stage_map.get_map_value(position) == Square.H_SW.value:
+				distance = (self._get_distance(single_block_position_1, position)
+						+ self._get_distance(single_block_position_2, position))
+			else:
+				distance = 2* min(self._get_distance(single_block_position_1, position),
+								self._get_distance(single_block_position_2, position))
+			if distance < min_distance: min_distance = distance
+		return min_distance
+
 	def _get_distance(self, position_1, position_2):
+		# return self._get_normal_distance(position_1, position_2)
+
 		# move by row or col only
 		(row_1, col_1) = position_1
 		(row_2, col_2) = position_2
 
-		return abs(row_1 - row_2) + abs(col_1 - col_2)
+		weight = abs(row_1 - row_2) * abs(col_1 - col_2) + 1
+		if weight > 2: weight = 1
+
+		if self._stage_map.get_map_value(position_2) == Square.S_SW.value:
+			return (abs(row_1 - row_2) + abs(col_1 - col_2)) * weight
+
+		distance = (abs(row_1 - row_2) + abs(col_1 - col_2))
+		if distance == 1:
+			return 4
+		else:
+			return distance * weight
+		
+	def _get_normal_distance(self, position_1, position_2):
+		(row_1, col_1) = position_1
+		(row_2, col_2) = position_2
+		return (abs(row_1 - row_2) + abs(col_1 - col_2))
+
+	def _can_move_to_goal(self, state):
+		stage_map = Map(self._stage_map)
+		stage_map.parse_bridge_status(state[1])
+		(goal_row, goal_col) = self._stage_map.get_goal_position()
+
+		goal_up_pair = ( (goal_row - 1, goal_col), (goal_row - 2, goal_col) )
+		if self._is_valid_block_position(goal_up_pair, stage_map):
+			return True
+
+		goal_down_pair = ( (goal_row + 1, goal_col), (goal_row + 2, goal_col) )
+		if self._is_valid_block_position(goal_down_pair, stage_map):
+			return True
+
+		goal_left_pair = ( (goal_row, goal_col - 1), (goal_row, goal_col - 2) )
+		if self._is_valid_block_position(goal_left_pair, stage_map):
+			return True
+
+		goal_right_pair = ( (goal_row, goal_col + 1), (goal_row, goal_col + 2) )
+		if self._is_valid_block_position(goal_right_pair, stage_map):
+			return True
 
 	def _parse_state_to_map(self, state):
 		list_bridge_status = state[1]
