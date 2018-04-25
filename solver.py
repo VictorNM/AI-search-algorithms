@@ -101,8 +101,8 @@ class SearchSolver(Solver):
 			self._current_node = self._get_from_open_list()
 			self._put_to_closed_set(self._current_node.state)
 			self.num_visited_nodes += 1
-			if self.num_visited_nodes > 350000 and self.num_visited_nodes % 10000 == 0:
-				print(self.num_visited_nodes)
+			if self.num_visited_nodes % 20000 == 0:
+				print('visited:', self.num_visited_nodes, 'nodes')
 			
 			if self._is_solution(self._current_node):
 				return self._current_node
