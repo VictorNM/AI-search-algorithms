@@ -107,9 +107,10 @@ class Bloxorz(Problem):
 				self._stage_map.get_map_value(single_block_position_2) == Square.GOAL.value)
 
 	def get_heuristic_rank(self, state):
+		# return self.get_normal_heuristic_rank(state)
 		pair_block_position = state[0]
 		bridge_status_list = state[1]
-		total_open = sum(1 for bridge_status in bridge_status_list if bridge_status == Square.H_TI.value)
+		total_close = sum(1 for bridge_status in bridge_status_list if bridge_status == Square.EMPT.value)
 		can_move_to_goal_rank = 0
 		if not self._can_move_to_goal(state):
 			can_move_to_goal_rank = 1
@@ -121,8 +122,13 @@ class Bloxorz(Problem):
 			if min_distance > self._get_distance_to_nearest_switch(pair_block_position):
 				min_distance = self._get_distance_to_nearest_switch(pair_block_position)
 
-		return (can_move_to_goal_rank, total_open, min_distance, self._get_distance_to_goal(pair_block_position))
+		return (can_move_to_goal_rank, total_close, min_distance, self._get_distance_to_goal(pair_block_position))
 		# return self._get_distance_to_goal(pair_block_position)
+
+	def get_normal_heuristic_rank(self, state):
+		pair_block_position = state[0]
+		bridge_status_list = state[1]
+		return self._get_distance_to_goal(pair_block_position)
 
 	def set_initial_state(self, initial_state):
 		self.initial_state = initial_state
@@ -428,10 +434,23 @@ class Bloxorz(Problem):
 			return (pair_block_position, bridge_status_list)
 
 		block_index = moved_block - 1
+
 		# only check for on soft switch
-		if self._is_on_soft_switch(pair_block_position[block_index]):
-			switch_position = pair_block_position[block_index]
-			bridge_status_list = self._change_list_bridge_status(switch_position, bridge_status_list)
+
+		if not self._is_splitting(pair_block_position):
+			# check all 2 single positions
+			if self._is_on_soft_switch(pair_block_position[0]):
+				switch_position = pair_block_position[0]
+				bridge_status_list = self._change_list_bridge_status(switch_position, bridge_status_list)
+			if (pair_block_position[1] != pair_block_position[0] and
+				self._is_on_soft_switch(pair_block_position[1])):
+				switch_position = pair_block_position[1]
+				bridge_status_list = self._change_list_bridge_status(switch_position, bridge_status_list)
+		else:
+			# check 1 single position
+			if self._is_on_soft_switch(pair_block_position[block_index]):
+				switch_position = pair_block_position[block_index]
+				bridge_status_list = self._change_list_bridge_status(switch_position, bridge_status_list)
 
 		return (pair_block_position, bridge_status_list)
 

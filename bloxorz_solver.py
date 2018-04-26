@@ -24,6 +24,14 @@ class BloxorzCreator(object):
 			14	: self.create_stage_14,
 			15	: self.create_stage_15,
 			16	: self.create_stage_16,
+			17	: self.create_stage_17,
+			18	: self.create_stage_18,
+			19	: self.create_stage_19,
+			20	: self.create_stage_20,
+			21	: self.create_stage_21,
+			22	: self.create_stage_22,
+			23	: self.create_stage_23,
+			24	: self.create_stage_24,
 		}[stage_number]()
 
 	def create_stage_1(self):
@@ -499,6 +507,299 @@ class BloxorzCreator(object):
 		}
 		start_position = ( (6,3), (6,3) )
 		start_bridge_status = (0,0,0,0)
+
+		stage_map = Map()
+		stage_map.set_map(map_matrix, bridge_positions, switch_bridge_dict, split_port_dest_dict)
+
+		stage_problem = Bloxorz(stage_map)
+		initial_state = (start_position, start_bridge_status)
+		stage_problem.set_initial_state(initial_state)
+
+		return stage_problem
+
+	def create_stage_17(self):
+		map_matrix = [
+			[1,1,1,0,0,0,0,0,0,0,0,0,0,0,0],
+			[1,1,1,1,1,1,1,1,1,0,0,0,1,1,1],
+			[1,1,1,0,0,0,0,0,1,1,1,1,1,6,1],
+			[1,1,1,0,0,0,0,0,0,0,0,0,3,3,1],
+			[1,1,1,0,0,0,0,0,0,0,0,0,0,0,0],
+			[1,1,1,0,0,0,0,0,0,0,0,0,0,0,0],
+			[1,1,1,0,0,0,0,1,1,1,1,1,3,0,0],
+			[1,1,1,1,1,1,1,1,0,0,0,1,1,0,0],
+			[1,4,1,0,0,0,0,0,0,0,0,1,1,0,0],
+			[1,1,1,0,0,0,0,0,0,0,0,1,3,0,0],
+		]
+
+		bridge_positions = [(7,8), (2, 7), (1, 9),(6,6)]
+		switch_bridge_dict = {
+			(8, 1) 	: [(0,0)],
+			(6, 12)	: [(1,1)],
+			(9, 12)	: [(0,-1),(2,1)],
+			(3,12):[(3,-1)],
+			(3,13):[(3,1)]
+		}
+		split_port_dest_dict = {}
+		start_position = ((1, 1), (1, 1))
+		start_bridge_status = (0, 0, 0, 0)
+
+		stage_map = Map()
+		stage_map.set_map(map_matrix, bridge_positions,
+		                  switch_bridge_dict, split_port_dest_dict)
+
+		stage_problem = Bloxorz(stage_map)
+		initial_state = (start_position, start_bridge_status)
+		stage_problem.set_initial_state(initial_state)
+
+		return stage_problem
+	def create_stage_18(self):
+		map_matrix = [
+			[0,0,0,0,0,0,0,4,0,0,0,0,0,0,0],
+			[1,1,4,1,0,0,0,1,0,0,0,0,0,0,0],
+			[1,1,1,1,1,0,0,1,0,0,0,0,0,0,0],
+			[1,4,1,1,1,1,1,1,0,0,1,1,0,0,1],
+			[1,1,1,1,1,0,0,0,1,0,0,0,1,0,0],
+			[1,1,4,1,0,0,0,0,1,0,0,0,1,0,0],
+			[1,0,0,0,0,0,0,0,4,0,0,1,1,1,0],
+			[1,0,0,0,0,0,0,0,0,0,1,1,6,1,0],
+			[1,0,0,3,0,0,0,0,0,0,1,1,1,1,0],
+		]
+
+		bridge_positions = [(3,8), (3, 9), (8,1),(8,2), (3,12),(3,13),(4,5) ]
+		switch_bridge_dict = {
+			(3,1) 	: [(0,-1),(1,-1)],#
+			(1,2)	: [(2,-1),(3,-1),(4,-1),(5,-1)],
+			(5,2)	: [(2,-1),(3,-1),(4,-1),(5,-1)],
+			(0,7)	: [(0,1),(1,1)],#
+			(6,8)	: [(2,1),(3,1),(4,1),(5,1)],#
+			(8,3)	: [(6,0)]#
+
+		}
+		split_port_dest_dict = {}
+		start_position = ((3, 2), (3, 2))
+		start_bridge_status = (0, 0, 0, 0, 0, 0, 0)
+
+		stage_map = Map()
+		stage_map.set_map(map_matrix, bridge_positions,
+		                  switch_bridge_dict, split_port_dest_dict)
+
+		stage_problem = Bloxorz(stage_map)
+		initial_state = (start_position, start_bridge_status)
+		stage_problem.set_initial_state(initial_state)
+
+		return stage_problem
+
+	def create_stage_19(self):
+		map_matrix = [
+			[0,1,1,1,1,1,1,1,1,1,4,1,1,1,1],
+			[0,0,0,0,0,1,1,0,0,0,0,0,0,1,1],
+			[0,0,0,0,0,1,1,0,0,0,0,0,0,1,1],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,1,1],
+			[0,0,0,0,0,0,0,0,0,0,0,0,0,1,1],
+			[1,1,1,0,0,1,1,0,0,1,4,1,1,1,1],
+			[1,6,1,0,0,1,1,0,0,0,0,0,0,0,0],
+			[1,1,1,0,0,1,1,0,0,0,0,0,0,0,0],
+			[0,1,1,0,0,1,1,0,0,0,0,0,0,0,0],
+			[0,1,1,1,1,1,1,1,1,1,4,1,1,1,0]
+		]
+
+		bridge_positions = [(5,7), (5, 8), (9,3),(9,4)]
+		switch_bridge_dict = {
+			(0, 10) 	: [(0,0),(1,0)],
+			(5,10)	: [(2,-1),(3,-1)],
+			(9,10)	:[(2,1),(3,1)]
+		}
+		split_port_dest_dict = {}
+		start_position = ((0, 1), (0, 1))
+		start_bridge_status = (0, 0, 1, 1)
+
+		stage_map = Map()
+		stage_map.set_map(map_matrix, bridge_positions,
+		                  switch_bridge_dict, split_port_dest_dict)
+
+		stage_problem = Bloxorz(stage_map)
+		initial_state = (start_position, start_bridge_status)
+		stage_problem.set_initial_state(initial_state)
+
+		return stage_problem
+
+	def create_stage_20(self):
+		map_matrix = [
+			[0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	1,	1,	1],
+			[0,	0,	1,	1,	1,	0,	0,	1,	1,	1,	0,	0,	1,	1,	1],
+			[0,	0,	1,	1,	1,	0,	0,	4,	1,	1,	0,	0,	1,	1,	1],
+			[0,	0,	1,	1,	1,	0,	0,	1,	1,	1,	0,	0,	0,	0,	0],
+			[0,	0,	1,	4,	1,	0,	0,	5,	1,	4,	0,	0,	0,	0,	0],
+			[0,	0,	1,	1,	1,	0,	0,	1,	1,	1,	0,	0,	0,	0,	0],
+			[1,	1,	1,	1,	0,	0,	0,	1,	1,	1,	0,	0,	4,	1,	1],
+			[1,	4,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	1,	1,	1],
+			[0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	1,	6,	1],
+			[0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	1,	1,	1]
+		]
+
+		bridge_positions = [
+			(1,5),(1,6),(1,10),(1,11),(6,10),(6,11)]
+
+		switch_bridge_dict = {
+			(4,3) : [(0,-1), (1,-1)],
+			(4,9) : [(0,-1), (1,-1)],
+			(2,7) : [(0,-1), (1,-1)],
+		 	(7,1) : [(2,0), (3,0)],
+		 	(6,12) : [(4,0), (5,0)]}
+
+		split_port_dest_dict = {
+			(4,7) : [ (1,13), (7,13) ]
+		};
+
+		start_position = ( (2,8), (2,8) )
+		start_bridge_status = (1,1,0,0,0,0)
+
+		stage_map = Map()
+		stage_map.set_map(map_matrix, bridge_positions, switch_bridge_dict, split_port_dest_dict)
+
+		stage_problem = Bloxorz(stage_map)
+		initial_state = (start_position, start_bridge_status)
+		stage_problem.set_initial_state(initial_state)
+
+		return stage_problem
+
+	def create_stage_21(self):
+		map_matrix = [
+			[0,	0,	0,	0,	0,	0,	0,	0,	1,	1,	0,	0,	0,	0,	0],
+			[0,	0,	0,	0,	0,	0,	0,	1,	1,	1,	0,	0,	0,	0,	0],
+			[1,	1,	0,	0,	1,	1,	1,	1,	1,	1,	0,	0,	0,	0,	0],
+			[1,	1,	1,	1,	1,	1,	0,	0,	1,	0,	0,	0,	0,	0,	0],
+			[1,	1,	1,	1,	0,	0,	0,	0,	1,	0,	0,	0,	0,	0,	0],
+			[0,	1,	1,	0,	0,	0,	0,	0,	3,	1,	0,	0,	1,	1,	1],
+			[0,	0,	1,	0,	0,	0,	0,	0,	3,	1,	1,	1,	1,	6,	1],
+			[0,	0,	1,	1,	1,	0,	0,	0,	1,	1,	0,	0,	1,	1,	1],
+			[0,	0,	0,	1,	1,	1,	0,	0,	1,	1,	0,	0,	0,	0,	0],
+			[0,	0,	0,	0,	1,	1,	1,	1,	1,	1,	0,	0,	0,	0,	0]
+		]
+
+		bridge_positions = [
+			(9,3),(7,5)]
+
+		switch_bridge_dict = {
+			(5,8) : [(0,0)],
+			(6,8) : [(1,0)]}
+
+		split_port_dest_dict = {};
+
+		start_position = ( (3,1), (3,1) )
+		start_bridge_status = (0,0)
+
+		stage_map = Map()
+		stage_map.set_map(map_matrix, bridge_positions, switch_bridge_dict, split_port_dest_dict)
+
+		stage_problem = Bloxorz(stage_map)
+		initial_state = (start_position, start_bridge_status)
+		stage_problem.set_initial_state(initial_state)
+
+		return stage_problem
+
+
+	def create_stage_22(self):
+		map_matrix = [
+			[0,	0,	0,	0,	0,	1,	1,	0,	0,	0,	0,	1,	1,	1],
+			[0,	0,	0,	1,	1,	1,	1,	1,	1,	0,	0,	1,	6,	1],
+			[1,	1,	1,	1,	1,	1,	4,	1,	1,	1,	1,	1,	1,	1],
+			[1,	1,	1,	1,	4,	0,	0,	1,	1,	1,	1,	1,	0,	0],
+			[1,	1,	1,	0,	0,	0,	0,	0,	0,	1,	1,	1,	0,	0],
+			[0,	1,	0,	0,	0,	0,	0,	0,	0,	0,	1,	0,	0,	0],
+			[0,	1,	0,	0,	0,	0,	0,	0,	0,	0,	1,	0,	0,	0],
+			[0,	1,	0,	0,	0,	0,	0,	0,	0,	1,	1,	0,	0,	0],
+			[0,	1,	1,	0,	0,	0,	0,	0,	0,	1,	1,	0,	0,	0],
+			[0,	0,	3,	0,	0,	0,	0,	0,	0,	3,	0,	0,	0,	0]
+		]
+
+		bridge_positions = [
+			(7,2),(3,12),(7,9)]
+
+		switch_bridge_dict = {
+			(2,6) : [(0,-1),(1,-1)],
+			(3,4) : [(0,-1),(1,-1)],
+			(9,9) : [(0,0)],
+			(9,2) : [(1,0)]}
+
+		split_port_dest_dict = {};
+
+		start_position = ( (3,1), (3,1) )
+		start_bridge_status = (0,0,1)
+
+		stage_map = Map()
+		stage_map.set_map(map_matrix, bridge_positions, switch_bridge_dict, split_port_dest_dict)
+
+		stage_problem = Bloxorz(stage_map)
+		initial_state = (start_position, start_bridge_status)
+		stage_problem.set_initial_state(initial_state)
+
+		return stage_problem
+
+	def create_stage_23(self):
+		map_matrix = [
+			[0,	1,	1,	1,	0,	0,	0,	0,	0,	0,	0,	0,	1,	1,	1],
+			[0,	1,	3,	1,	0,	0,	0,	0,	0,	0,	0,	0,	1,	4,	1],
+			[0,	1,	1,	1,	0,	0,	0,	1,	1,	1,	0,	0,	1,	1,	1],
+			[0,	1,	1,	1,	0,	0,	0,	1,	6,	1,	0,	0,	1,	1,	4],
+			[1,	0,	0,	0,	1,	0,	0,	1,	1,	1,	0,	0,	0,	0,	1],
+			[4,	0,	0,	0,	1,	0,	0,	2,	2,	2,	0,	0,	0,	0,	1],
+			[1,	0,	0,	1,	1,	1,	2,	2,	2,	2,	2,	1,	1,	1,	0],
+			[0,	0,	0,	1,	1,	1,	2,	2,	2,	2,	2,	1,	5,	1,	0],
+			[0,	0,	0,	1,	1,	1,	2,	2,	2,	2,	2,	1,	1,	1,	0],
+			[0,	0,	0,	1,	1,	1,	1,	1,	0,	0,	0,	0,	0,	0,	0]
+		]
+
+		bridge_positions = [
+			(3,4),(3,0),(2,10),(2,11),(8,14),(6,1),(6,2),(9,8)]
+
+		switch_bridge_dict = {
+			(1,2) : [(0,1)],
+			(5,0) : [(1,1),(5,-1),(6,-1)],
+			(3,14) : [(2,-1),(3,-1),(4,-1)],
+			(1,13) : [(5,1),(6,1),(7,0)]}
+
+		split_port_dest_dict = {
+			(7,12) : [ (7,12), (2,2) ]
+		}
+		start_position = ( (7,4),(7,4) )
+		start_bridge_status = (0,0,0,0,0,0,0,0)
+
+		stage_map = Map()
+		stage_map.set_map(map_matrix, bridge_positions, switch_bridge_dict, split_port_dest_dict)
+
+		stage_problem = Bloxorz(stage_map)
+		initial_state = (start_position, start_bridge_status)
+		stage_problem.set_initial_state(initial_state)
+
+		return stage_problem
+
+	def create_stage_24(self):
+		map_matrix = [
+			[0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	1,	1,	1,	1],
+			[0,	0,	0,	0,	1,	1,	1,	1,	1,	1,	1,	3,	1,	5],
+			[0,	1,	0,	0,	1,	3,	1,	0,	0,	0,	1,	1,	1,	1],
+			[3,	1,	0,	0,	1,	1,	0,	0,	0,	0,	0,	0,	1,	0],
+			[1,	1,	0,	0,	1,	0,	0,	0,	0,	0,	0,	0,	1,	0],
+			[1,	1,	1,	1,	1,	0,	0,	0,	0,	0,	1,	1,	1,	0],
+			[1,	1,	1,	0,	0,	1,	1,	1,	0,	0,	1,	6,	1,	0],
+			[0,	0,	0,	0,	0,	3,	1,	0,	0,	0,	1,	1,	1,	0]
+		]
+
+		bridge_positions = [
+			(2,2),(2,3),(1,3),(7,7),(6,8),(6,9)]
+
+		switch_bridge_dict = {
+			(1,11) : [(0,1),(1,1)],
+			(3,0) : [(2,1)],
+			(2,5) : [(3,1)],
+			(7,5) : [(4,1),(5,1)]}
+
+		split_port_dest_dict = {
+			(1,13) : [ (6,5), (6,7) ]
+		}
+		start_position = ( (2,1),(2,1) )
+		start_bridge_status = (0,0,0,0,0,0)
 
 		stage_map = Map()
 		stage_map.set_map(map_matrix, bridge_positions, switch_bridge_dict, split_port_dest_dict)
