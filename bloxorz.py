@@ -95,8 +95,8 @@ class Bloxorz(Problem):
 			self.set_initial_state(initial_state)
 
 	def get_all_actions_results(self, current_state):
+		# print(current_state[0], current_state[1], sep='\t')
 		self._parse_state_to_map(current_state)
-		# print(current_state[0])
 		return self._do_all_valid_moves(current_state)
 
 	def is_goal_state(self, state):
@@ -107,7 +107,7 @@ class Bloxorz(Problem):
 				self._stage_map.get_map_value(single_block_position_2) == Square.GOAL.value)
 
 	def get_heuristic_rank(self, state):
-		# return self.get_normal_heuristic_rank(state)
+		return self.get_normal_heuristic_rank(state)
 		pair_block_position = state[0]
 		bridge_status_list = state[1]
 		total_close = sum(1 for bridge_status in bridge_status_list if bridge_status == Square.EMPT.value)
@@ -115,12 +115,13 @@ class Bloxorz(Problem):
 		if not self._can_move_to_goal(state):
 			can_move_to_goal_rank = 1
 
+		min_distance = 1000
 		if self._is_splitting(pair_block_position):
 			min_distance = self._get_distance_to_nearest_switch(pair_block_position)
 		else:
-			min_distance = self._get_distance_to_nearest_split_port(pair_block_position)
-			if min_distance > self._get_distance_to_nearest_switch(pair_block_position):
-				min_distance = self._get_distance_to_nearest_switch(pair_block_position)
+			min_distance = self._get_distance_to_nearest_switch(pair_block_position)
+			if min_distance > self._get_distance_to_nearest_split_port(pair_block_position):
+				min_distance = self._get_distance_to_nearest_split_port(pair_block_position)
 
 		return (can_move_to_goal_rank, total_close, min_distance, self._get_distance_to_goal(pair_block_position))
 		# return self._get_distance_to_goal(pair_block_position)
@@ -416,7 +417,7 @@ class Bloxorz(Problem):
 			self._is_on_soft_switch(pair_block_position[1])):
 			switch_position = pair_block_position[1]
 			bridge_status_list = self._change_list_bridge_status(switch_position, bridge_status_list)
-		
+
 		# on hard switch
 		if self._is_on_hard_switch(pair_block_position):
 			switch_position = pair_block_position[0]
@@ -464,7 +465,6 @@ class Bloxorz(Problem):
 		return self._stage_map.get_map_value(position_1) == Square.H_SW.value
 
 	def _is_on_split_port(self, pair_block_position):
-		# uncomment after write test
 		(position_1, position_2) = pair_block_position
 		if position_1 != position_2:
 			return False
@@ -473,6 +473,7 @@ class Bloxorz(Problem):
 	def _change_list_bridge_status(self, switch_position, bridge_status_list):
 		bridge_action_list = self._stage_map.get_list_bridge_action_of_switch(switch_position)
 		bridge_status_list = list(bridge_status_list)
+
 		for bridge_action in bridge_action_list:
 			bridge_index = bridge_action[0]
 			action_code = bridge_action[1]
@@ -485,30 +486,23 @@ class Bloxorz(Problem):
 					bridge_status_list[bridge_index] = Square.H_TI.value
 				else:
 					bridge_status_list[bridge_index] = Square.EMPT.value
+
 		return tuple(bridge_status_list)
-
-	# def _change_bridge_status(self, bridge_index, action_code):
-	# 	pass
-
+		
 	def _move_to_split_dest(self, split_port_position):
 		split_dest_list = self._stage_map.get_list_split_dest_of_port(split_port_position)
 		return tuple(split_dest_list)
 
 	def _get_distance_to_goal(self, pair_block_position):
-		(single_block_position_1, single_block_position_2) = pair_block_position
 		goal_position = self._stage_map.get_goal_position()
-		distance_1 = self._get_distance(single_block_position_1, goal_position)
-		distance_2 = self._get_distance(single_block_position_2, goal_position)
-
-		return distance_1 + distance_2
+		return self._calculate_distance_to_pair_item(pair_block_position, goal_position)
 
 	def _get_distance_to_nearest_split_port(self, pair_block_position):
 		(single_block_position_1, single_block_position_2) = pair_block_position
 		split_port_position_list = self._stage_map.get_port_position_list()
 		min_distance = 1000
-		for item_position in split_port_position_list:
-			distance = (self._get_distance(single_block_position_1, item_position)
-					+ self._get_distance(single_block_position_2, item_position))
+		for split_port_position in split_port_position_list:
+			distance = self._calculate_distance_to_pair_item(pair_block_position, split_port_position)
 			if distance < min_distance: min_distance = distance
 		return min_distance
 
@@ -516,39 +510,45 @@ class Bloxorz(Problem):
 		(single_block_position_1, single_block_position_2) = pair_block_position
 		switch_position_list = self._stage_map.get_switch_position_list()
 		min_distance = 1000
-		for position in switch_position_list:
-			if self._stage_map.get_map_value(position) == Square.H_SW.value:
-				distance = (self._get_distance(single_block_position_1, position)
-						+ self._get_distance(single_block_position_2, position))
+		for switch_position in switch_position_list:
+			if self._stage_map.get_map_value(switch_position) == Square.H_SW.value:
+				distance = self._calculate_distance_to_pair_item(pair_block_position, switch_position)
 			else:
-				distance = 2* min(self._get_distance(single_block_position_1, position),
-								self._get_distance(single_block_position_2, position))
+				distance = self._calculate_distance_to_single_item(pair_block_position, switch_position)
 			if distance < min_distance: min_distance = distance
 		return min_distance
 
+	# for distance to goal, hard switch, split port
+	def _calculate_distance_to_pair_item(self, pair_block_position, destination_position):
+		(position_1 , position_2) = pair_block_position
+		distance_1 = self._get_distance(position_1, destination_position)
+		distance_2 = self._get_distance(position_2, destination_position)
+
+		pair_distance = distance_1 + distance_2
+
+		# for normal distance calculation
+		return distance_1 + distance_2
+
+		if pair_distance == 1: return 4
+		return pair_distance
+
+	# for distance to soft switch
+	def _calculate_distance_to_single_item(self, pair_block_position, destination_position):
+		(position_1 , position_2) = pair_block_position
+		distance_1 = self._get_distance(position_1, destination_position)
+		distance_2 = self._get_distance(position_2, destination_position)
+
+		# for normal distance calculation
+		return distance_1 + distance_2
+
+		return 2 * min(distance_1, distance_2)
+
 	def _get_distance(self, position_1, position_2):
-		# return self._get_normal_distance(position_1, position_2)
-
-		# move by row or col only
 		(row_1, col_1) = position_1
 		(row_2, col_2) = position_2
 
-		weight = abs(row_1 - row_2) * abs(col_1 - col_2) + 1
-		if weight > 2: weight = 1
-
-		if self._stage_map.get_map_value(position_2) == Square.S_SW.value:
-			return (abs(row_1 - row_2) + abs(col_1 - col_2)) * weight
-
-		distance = (abs(row_1 - row_2) + abs(col_1 - col_2))
-		if distance == 1:
-			return 4
-		else:
-			return distance * weight
-		
-	def _get_normal_distance(self, position_1, position_2):
-		(row_1, col_1) = position_1
-		(row_2, col_2) = position_2
-		return (abs(row_1 - row_2) + abs(col_1 - col_2))
+		distance = abs(row_1 - row_2) + abs(col_1 - col_2)
+		return distance
 
 	def _can_move_to_goal(self, state):
 		stage_map = Map(self._stage_map)

@@ -99,6 +99,10 @@ class SearchSolver(Solver):
 
 		while not self._is_empty_open_list():
 			self._current_node = self._get_from_open_list()
+
+			if self._current_node.state in self._closed_set:
+				continue
+
 			self._put_to_closed_set(self._current_node.state)
 			self.num_visited_nodes += 1
 			if self.num_visited_nodes % 20000 == 0:
