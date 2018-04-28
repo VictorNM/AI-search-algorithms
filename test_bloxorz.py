@@ -1,4 +1,4 @@
-from bloxorz_2 import *
+from bloxorz import *
 from bloxorz_solver import *
 import unittest
 

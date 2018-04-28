@@ -756,7 +756,7 @@ class BloxorzCreator(object):
 		]
 
 		bridge_positions = [
-			(3,4),(3,0),(2,10),(2,11),(8,14),(6,1),(6,2),(9,8)]
+			(3,4),(3,0),(2,10),(2,11),(6,14),(6,1),(6,2),(9,8)]
 
 		switch_bridge_dict = {
 			(1,2) : [(0,1)],
@@ -768,7 +768,7 @@ class BloxorzCreator(object):
 			(7,12) : [ (7,12), (2,2) ]
 		}
 		start_position = ( (7,4),(7,4) )
-		start_bridge_status = (0,0,0,0,0,0,0,0)
+		start_bridge_status = (0,0,1,1,1,0,0,0)
 
 		stage_map = Map()
 		stage_map.set_map(map_matrix, bridge_positions, switch_bridge_dict, split_port_dest_dict)
@@ -896,7 +896,7 @@ class BloxorzCreator(object):
 			[0, 1, 1, 1, 0, 0, 0, 0, 3, 0, 0, 1, 6, 1, 0],
 			[0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 0],
 			[0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0],
-			[0, 2, 2, 2, 0, 0, 3, 1, 1, 0, 0, 0, 2, 0, 0],
+			[0, 2, 2, 2, 0, 0, 4, 1, 1, 0, 0, 0, 2, 0, 0],
 			[0, 0, 2, 0, 0, 0, 1, 1, 1, 0, 0, 2, 2, 2, 0],
 			[0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0],
 			[1, 1, 1, 1, 0, 0, 1, 4, 1, 1, 1, 1, 1, 1, 0],
@@ -909,8 +909,8 @@ class BloxorzCreator(object):
 
 		stage_31_switch_bridge_dict = {
 			(1,8) : [ (5,0), (6,0) ],
-			(4,6) : [ (3,-1), (4,-1) ,(5,-1), (6,-1), (10,-1), (11,-1),(12,-1) ,(13,-1) ],
-			(7,7) : [ (3,-1), (4,-1) ,(5,-1), (6,-1), (10,-1), (11,-1),(12,-1) ,(13,-1) ],
+			(4,6) : [ (3,-1), (4,-1), (5,-1), (6,-1), (10,-1), (11,-1), (12,-1) ,(13,-1) ],
+			(7,7) : [ (3,-1), (4,-1) ,(5,-1), (6,-1), (10,-1), (11,-1), (12,-1) ,(13,-1) ],
 			(8,2) : [ (0,1), (1,1), (2,1), (3,-1), (4,-1) ],
 			(8,6) : [ (10,0), (11,0) ]
 		}
@@ -1070,14 +1070,14 @@ def solve_by_BFS(stage, max_node = 0):
 def main():
 
 	num_stage = int(input("Enter stage: "))
-	max_node = 0
+	max_node = 700000
 
 	bloxorz_creator = BloxorzCreator()
 	stage = bloxorz_creator.create_stage(num_stage)
 	stage.draw_map()
 	
-	solve_by_DFS(stage, max_node)
-	solve_by_BrFS(stage, max_node)
+	# solve_by_DFS(stage, max_node)
+	# solve_by_BrFS(stage, max_node)
 	solve_by_BFS(stage, max_node)
 
 if __name__ == '__main__':

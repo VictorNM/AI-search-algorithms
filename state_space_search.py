@@ -20,14 +20,6 @@ class DepthFirstSearchSolver(SearchSolver):
 	def _get_from_open_list(self):
 		return self._open_list.pop()
 
-	# check if node was processed, avoid infinite loop
-	def _get_satisfying_nodes(self, list_of_nodes):	
-		satisfying_nodes = [node
-							for node in list_of_nodes
-							if node.state not in self._closed_set]
-
-		return satisfying_nodes
-
 
 class BreadthFirstSearchSolver(SearchSolver):
 	def __init__(self, problem):
@@ -43,11 +35,3 @@ class BreadthFirstSearchSolver(SearchSolver):
 
 	def _get_from_open_list(self):
 		return self._open_list.pop(0)
-
-	# similar to DFS, but not for avoid inifite loop, it is used to search faster
-	def _get_satisfying_nodes(self, list_of_nodes):	
-		satisfying_nodes = [node
-							for node in list_of_nodes
-							if node.state not in self._closed_set]
-
-		return satisfying_nodes
