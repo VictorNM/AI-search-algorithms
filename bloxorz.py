@@ -15,6 +15,8 @@ class Square(Enum):
 	def __int__(self):
 		return self.value
 
+#======================================================================
+
 class Map(object):
 	def __init__(self, stage_map = None):
 		if stage_map is not None:
@@ -83,6 +85,8 @@ class Map(object):
 
 		return str(np.matrix(value_matrix))
 
+#======================================================================
+
 class Bloxorz(Problem):
 	def __init__(self, stage_map = None, initial_state = None):
 		self._stage_map = None
@@ -95,7 +99,6 @@ class Bloxorz(Problem):
 			self.set_initial_state(initial_state)
 
 	def get_all_actions_results(self, current_state):
-		# print(current_state[0], current_state[1], sep='\t')
 		self._parse_state_to_map(current_state)
 		return self._do_all_valid_moves(current_state)
 
@@ -108,6 +111,21 @@ class Bloxorz(Problem):
 
 	def get_heuristic_rank(self, state):
 		return self.get_normal_heuristic_rank(state)
+		# return self.get_improved_heuristic_rank(state)
+
+	# Heuristic:
+	#	- Distance to goal
+	def get_normal_heuristic_rank(self, state):
+		pair_block_position = state[0]
+		bridge_status_list = state[1]
+		return self._get_distance_to_goal(pair_block_position)
+
+	# Heuristic:
+	#	- Can block move to goal?
+	#	- Total close bridge on map
+	#	- Distance to nearest item (switch, split port)
+	# 	- Distance to goal
+	def get_improved_heuristic_rank(self, state):
 		pair_block_position = state[0]
 		bridge_status_list = state[1]
 		total_close = sum(1 for bridge_status in bridge_status_list if bridge_status == Square.EMPT.value)
@@ -124,12 +142,6 @@ class Bloxorz(Problem):
 				min_distance = self._get_distance_to_nearest_split_port(pair_block_position)
 
 		return (can_move_to_goal_rank, total_close, min_distance, self._get_distance_to_goal(pair_block_position))
-		# return self._get_distance_to_goal(pair_block_position)
-
-	def get_normal_heuristic_rank(self, state):
-		pair_block_position = state[0]
-		bridge_status_list = state[1]
-		return self._get_distance_to_goal(pair_block_position)
 
 	def set_initial_state(self, initial_state):
 		self.initial_state = initial_state
@@ -529,6 +541,7 @@ class Bloxorz(Problem):
 		# for normal distance calculation
 		return distance_1 + distance_2
 
+		# for improved distance calculation
 		if pair_distance == 1: return 4
 		return pair_distance
 
@@ -541,6 +554,7 @@ class Bloxorz(Problem):
 		# for normal distance calculation
 		return distance_1 + distance_2
 
+		# for improved distance calculation
 		return 2 * min(distance_1, distance_2)
 
 	def _get_distance(self, position_1, position_2):

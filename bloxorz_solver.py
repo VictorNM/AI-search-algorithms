@@ -1076,8 +1076,8 @@ def main():
 	stage = bloxorz_creator.create_stage(num_stage)
 	stage.draw_map()
 	
-	# solve_by_DFS(stage, max_node)
-	# solve_by_BrFS(stage, max_node)
+	solve_by_DFS(stage, max_node)
+	solve_by_BrFS(stage, max_node)
 	solve_by_BFS(stage, max_node)
 
 if __name__ == '__main__':
