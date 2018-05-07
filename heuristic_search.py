@@ -18,7 +18,7 @@ class BestFirstSearchSolver(SearchSolver):
 	def _put_to_open_list(self, node):
 		heuristic_rank = self._problem.get_heuristic_rank(node.state)
 		# depth_rank = self._problem.get_depth_rank(node.state)
-		priority = heuristic_rank + node.depth * 2.5
+		priority = heuristic_rank #+ depth_rank
 		self._open_list.put((priority, -time.time(), node))
 
 	def _is_empty_open_list(self):

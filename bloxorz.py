@@ -110,41 +110,11 @@ class Bloxorz(Problem):
 				self._stage_map.get_map_value(single_block_position_2) == Square.GOAL.value)
 
 	def get_heuristic_rank(self, state):
-		return self.get_normal_heuristic_rank(state)
-		# return self.get_improved_heuristic_rank(state)
-
-	def get_depth_rank(self, state):
-		pair_block_position = state[0]
-		return self._get_distance_to_initial_position(pair_block_position)
-
-	# Heuristic:
-	#	- Distance to goal
-	def get_normal_heuristic_rank(self, state):
 		pair_block_position = state[0]
 		return self._get_distance_to_goal(pair_block_position)
 
-	# # Heuristic:
-	# #	- Can block move to goal?
-	# #	- Total close bridge on map
-	# #	- Distance to nearest item (switch, split port)
-	# # 	- Distance to goal
-	# def get_improved_heuristic_rank(self, state):
-	# 	pair_block_position = state[0]
-	# 	bridge_status_list = state[1]
-	# 	total_close = sum(1 for bridge_status in bridge_status_list if bridge_status == Square.EMPT.value)
-	# 	can_move_to_goal_rank = 0
-	# 	if not self._can_move_to_goal(state):
-	# 		can_move_to_goal_rank = 1
-
-	# 	min_distance = 1000
-	# 	if self._is_splitting(pair_block_position):
-	# 		min_distance = self._get_distance_to_nearest_switch(pair_block_position)
-	# 	else:
-	# 		min_distance = self._get_distance_to_nearest_switch(pair_block_position)
-	# 		if min_distance > self._get_distance_to_nearest_split_port(pair_block_position):
-	# 			min_distance = self._get_distance_to_nearest_split_port(pair_block_position)
-
-	# 	return (4*can_move_to_goal_rank + 3*total_close + 2*min_distance + self._get_distance_to_goal(pair_block_position))
+	def get_depth_rank(self, state):
+		return 0
 
 	def set_initial_state(self, initial_state):
 		self.initial_state = initial_state
