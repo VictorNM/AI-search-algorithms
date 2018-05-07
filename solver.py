@@ -26,6 +26,9 @@ class Problem:
 	def get_heuristic_rank(self, state):
 		return 0
 
+	def get_depth_rank(self, state):
+		return 0
+
 # === CLASS NODE ===
 class Node:
 	def __init__(self, state = None, parent = None, children = None, depth = None, action = None, path_cost = None):
